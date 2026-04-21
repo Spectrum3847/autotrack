@@ -223,9 +223,12 @@ select option{background:#18222d}
     <div id="syncBar" style="display:none" class="sync-bar">
       <div class="sync-bar-txt">&#9679; SYNC MODE — all panels share playback</div>
       <div class="sync-master-ctrl">
-        <button class="ctrl-btn" onclick="syncSeek(-1)" style="width:28px;height:28px;font-size:11px">&#9664;&#9664;</button>
+        <button class="ctrl-btn" onclick="syncRestart()" style="width:28px;height:28px;font-size:11px" title="Restart from auto start">&#9632;</button>
+        <button class="ctrl-btn" onclick="syncSeek(-1)" style="width:28px;height:28px;font-size:9px" title="-1 second">-1s</button>
+        <button class="ctrl-btn" onclick="syncSeek(-FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="-5 frames">&#9664;&#9664;</button>
         <button class="ctrl-btn play-btn" id="syncPlayBtn" onclick="syncTogglePlay()" style="width:34px;height:34px;font-size:14px">&#9654;</button>
-        <button class="ctrl-btn" onclick="syncSeek(1)" style="width:28px;height:28px;font-size:11px">&#9654;&#9654;</button>
+        <button class="ctrl-btn" onclick="syncSeek(FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="+5 frames">&#9654;&#9654;</button>
+        <button class="ctrl-btn" onclick="syncSeek(1)" style="width:28px;height:28px;font-size:9px" title="+1 second">+1s</button>
         <div class="ctrl-div"></div>
         <div class="time-disp" id="syncTime">0:00</div>
       </div>
@@ -691,8 +694,12 @@ function updateCard(id) {
   const ctrlBar=syncMode?'':`
     <div class="ctrl-bar">
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+        <div class="ctrl-lbl">-1S</div>
+        <button class="ctrl-btn" onclick="seek(${id},-1)" style="font-size:9px">-1s</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
         <div class="ctrl-lbl">-5F</div>
-        <button class="ctrl-btn" onclick="seek(${id},-1)">&#9664;&#9664;</button>
+        <button class="ctrl-btn" onclick="seek(${id},-FRAME_SEC)">&#9664;&#9664;</button>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
         <div class="ctrl-lbl">${isPlaying?'PAUSE':'PLAY'}</div>
@@ -700,7 +707,11 @@ function updateCard(id) {
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
         <div class="ctrl-lbl">+5F</div>
-        <button class="ctrl-btn" onclick="seek(${id},1)">&#9654;&#9654;</button>
+        <button class="ctrl-btn" onclick="seek(${id},FRAME_SEC)">&#9654;&#9654;</button>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+        <div class="ctrl-lbl">+1S</div>
+        <button class="ctrl-btn" onclick="seek(${id},1)" style="font-size:9px">+1s</button>
       </div>
       <div class="ctrl-div"></div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
@@ -800,9 +811,9 @@ function pauseR(id){
   refreshCtrl(id);
 }
 
-function seek(id,dir){
+function seek(id,sec){
   const r=get(id);if(!r)return;
-  r.t=Math.max(0,Math.min(MAX_CLIP,r.t+dir*FRAME_SEC));
+  r.t=Math.max(0,Math.min(MAX_CLIP,r.t+sec));
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
@@ -880,9 +891,16 @@ function syncPause(){
   if(spb){spb.className='ctrl-btn play-btn';spb.innerHTML='&#9654;';}
 }
 
-function syncSeek(dir){
-  syncT=Math.max(0,Math.min(MAX_CLIP,syncT+dir*FRAME_SEC));
+function syncSeek(sec){
+  syncT=Math.max(0,Math.min(MAX_CLIP,syncT+sec));
   robots.forEach(r=>{r.t=syncT;ytCmd(r.id,'seekTo',[r.autoStart+syncT,true]);updateProg(r.id);});
+  updateSyncTime();
+}
+
+function syncRestart(){
+  syncPause();
+  syncT=0;
+  robots.forEach(r=>{r.t=0;ytCmd(r.id,'seekTo',[r.autoStart,true]);updateProg(r.id);});
   updateSyncTime();
 }
 
