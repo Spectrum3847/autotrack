@@ -80,7 +80,9 @@ select option{background:#18222d}
 .video-wrap{border-radius:6px;overflow:hidden;border:0.5px solid var(--border);background:#0a0f18;height:190px;position:relative}
 .video-wrap iframe{width:100%;height:100%;border:none;display:block}
 .vid-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--muted);font-size:11px;font-family:'Share Tech Mono',monospace;text-align:center;padding:10px;height:100%}
-.ctrl-bar{background:#101820;border-top:0.5px solid var(--border);padding:7px 10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.ctrl-bar{background:#101820;border-top:0.5px solid var(--border);padding:7px 10px 6px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.ctrl-btns-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.prog-row{display:flex;align-items:center;padding:0 2px}
 .ctrl-btn{background:var(--card);border:0.5px solid var(--border);color:var(--txt);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;flex-shrink:0}
 .ctrl-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(197,180,227,.1)}
 .ctrl-btn:active{transform:scale(.92)}
@@ -91,7 +93,7 @@ select option{background:#18222d}
 .loop-btn.on{background:rgba(197,180,227,.15);border-color:var(--accent);color:var(--accent)}
 .ctrl-div{width:0.5px;height:26px;background:var(--border);flex-shrink:0}
 .time-disp{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent);min-width:48px;text-align:center}
-.prog-bar{width:80px;height:3px;background:var(--border);border-radius:2px;cursor:pointer;flex-shrink:0}
+.prog-bar{flex:1;min-width:0;height:3px;background:var(--border);border-radius:2px;cursor:pointer;flex-shrink:0}
 .prog-fill{height:100%;background:var(--accent);border-radius:2px;pointer-events:none;transition:width .05s linear}
 .ctrl-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;text-align:center}
 .status-row{display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted)}
@@ -154,7 +156,6 @@ select option{background:#18222d}
   .ctrl-btn{width:38px;height:38px;font-size:15px}
   .play-btn{width:46px;height:46px;font-size:17px}
   .ctrl-lbl{font-size:7px}
-  .prog-bar{width:60px}
   .time-disp{font-size:10px;min-width:40px}
   .sync-bar{flex-direction:column;align-items:flex-start;gap:7px}
   .sync-master-ctrl{width:100%;justify-content:center}
@@ -261,7 +262,7 @@ select option{background:#18222d}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const MAX_ROBOTS = 3, MAX_CLIP = 120, FRAME_SEC = 1/6;
+const MAX_ROBOTS = 3, MAX_CLIP = 120, FRAME_SEC = 1/6, AUTO_LOOP_DUR = 21;
 const BASE = 'https://www.thebluealliance.com/api/v3';
 let TBA_KEY = '', robots = [], uid = 0;
 let syncMode = false, syncPlaying = false, syncT = 0, syncLastTs = null, syncRafId = null;
@@ -345,7 +346,7 @@ function pushRobot(team) {
   const id = ++uid;
   robots.push({id,team,events:[],matches:[],selEvent:'',selMatch:'',videoKey:null,loaded:false,
     loadingEvents:true,loadingMatches:false,error:'',playing:false,looping:false,
-    t:0,lastTs:null,rafId:null,autoStart:0,offsetUnsub:null,player:null,playerReady:false,playerKey:null});
+    t:0,lastTs:null,rafId:null,autoStart:0,duration:0,offsetUnsub:null,player:null,playerReady:false,playerKey:null});
   return id;
 }
 
@@ -417,7 +418,7 @@ function onMatchChange(id,val) {
   if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}
   destroyPlayer(r);
   unsubscribeOffset(r);
-  r.playing=false; r.t=0; r.selMatch=val; r.videoKey=null; r.loaded=false; r.autoStart=0;
+  r.playing=false; r.t=0; r.selMatch=val; r.videoKey=null; r.loaded=false; r.autoStart=0; r.duration=0;
   updateCard(id);
   if(val){ subscribeOffset(id); loadVideo(id); }
 }
@@ -435,7 +436,17 @@ function subscribeOffset(id) {
   r.offsetUnsub = db.collection('offsets').doc(r.selMatch).onSnapshot(
     snap => {
       const ro=get(id); if(!ro) return;
-      ro.autoStart = snap.exists ? (snap.data().t||0) : 0;
+      const newStart = snap.exists ? (snap.data().t||0) : 0;
+      // Only reset t if we haven't started playing yet (initial load)
+      if(!ro.playing && ro.t===0) {
+        ro.autoStart = newStart;
+      } else {
+        // Adjust t to keep the same absolute position in the video
+        const absPos = ro.autoStart + ro.t;
+        ro.autoStart = newStart;
+        ro.t = Math.max(0, absPos - newStart);
+        updateProg(id);
+      }
       ro.fsError = false;
       updateOffsetRow(id);
     },
@@ -468,8 +479,12 @@ async function saveOffset(matchKey, val) {
 
 async function markStartAndSave(id) {
   const r=get(id); if(!r) return;
-  r.autoStart = syncMode ? syncT : r.t;
+  // Absolute YouTube timestamp = old autoStart + relative t (or syncT in sync mode)
+  const absTime = syncMode ? (r.autoStart + syncT) : (r.autoStart + r.t);
+  r.autoStart = absTime;
+  r.t = 0;
   updateOffsetRow(id);
+  updateProg(id);
   if(!r.selMatch) return;
   const ok = await saveOffset(r.selMatch, r.autoStart);
   const btn=document.querySelector(`[data-mark-id="${id}"]`);
@@ -486,6 +501,8 @@ function markStart(id) { markStartAndSave(id); }
 function clearStart(id) {
   const r=get(id); if(!r) return;
   r.autoStart=0;
+  r.t=0;
+  updateProg(id);
   if(r.selMatch) saveOffset(r.selMatch, 0);
   updateOffsetRow(id);
 }
@@ -493,6 +510,8 @@ function clearStart(id) {
 function setStartOffset(id, val) {
   const r=get(id); if(!r) return;
   r.autoStart=Math.max(0, parseFloat(val)||0);
+  r.t=0;
+  updateProg(id);
   if(r.selMatch) saveOffset(r.selMatch, r.autoStart);
 }
 
@@ -688,39 +707,42 @@ function updateCard(id) {
   const evOpts=r.events.map(e=>`<option value="${e.key}"${r.selEvent===e.key?' selected':''}>${e.short_name||e.name}</option>`).join('');
   const mOpts=r.matches.map(m=>`<option value="${m.key}"${r.selMatch===m.key?' selected':''}>${mLabel(m)}</option>`).join('');
   const t=syncMode?syncT:r.t;
-  const s=Math.floor(t), pct=Math.min((t/MAX_CLIP)*100,100).toFixed(1);
+  const dur=r.duration||MAX_CLIP;
+  const pct=Math.min((t/dur)*100,100).toFixed(1);
   const isPlaying=syncMode?syncPlaying:r.playing;
 
   const ctrlBar=syncMode?'':`
     <div class="ctrl-bar">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">-1S</div>
-        <button class="ctrl-btn" onclick="seek(${id},-1)" style="font-size:9px">-1s</button>
+      <div class="ctrl-btns-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">-1S</div>
+          <button class="ctrl-btn" onclick="seek(${id},-1)" style="font-size:9px">-1s</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">-1/6S</div>
+          <button class="ctrl-btn" onclick="seek(${id},-FRAME_SEC)">&#9664;&#9664;</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl" id="playlbl-${id}">${isPlaying?'PAUSE':'PLAY'}</div>
+          <button class="ctrl-btn play-btn${isPlaying?' playing':''}" onclick="togglePlay(${id})">${isPlaying?'&#9646;&#9646;':'&#9654;'}</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">+1/6S</div>
+          <button class="ctrl-btn" onclick="seek(${id},FRAME_SEC)">&#9654;&#9654;</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">+1S</div>
+          <button class="ctrl-btn" onclick="seek(${id},1)" style="font-size:9px">+1s</button>
+        </div>
+        <div class="ctrl-div"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">LOOP</div>
+          <button class="ctrl-btn loop-btn${r.looping?' on':''}" onclick="toggleLoop(${id})">&#8635;</button>
+        </div>
+        <div class="ctrl-div"></div>
+        <div class="time-disp" id="td-${id}">${fmtTime(Math.floor(t))} / ${fmtTime(r.duration||MAX_CLIP)}</div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">-5F</div>
-        <button class="ctrl-btn" onclick="seek(${id},-FRAME_SEC)">&#9664;&#9664;</button>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">${isPlaying?'PAUSE':'PLAY'}</div>
-        <button class="ctrl-btn play-btn${isPlaying?' playing':''}" onclick="togglePlay(${id})">${isPlaying?'&#9646;&#9646;':'&#9654;'}</button>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">+5F</div>
-        <button class="ctrl-btn" onclick="seek(${id},FRAME_SEC)">&#9654;&#9654;</button>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">+1S</div>
-        <button class="ctrl-btn" onclick="seek(${id},1)" style="font-size:9px">+1s</button>
-      </div>
-      <div class="ctrl-div"></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">LOOP</div>
-        <button class="ctrl-btn loop-btn${r.looping?' on':''}" onclick="toggleLoop(${id})">&#8635;</button>
-      </div>
-      <div class="ctrl-div"></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-        <div class="time-disp" id="td-${id}">0:${String(s).padStart(2,'0')} / 0:40</div>
+      <div class="prog-row">
         <div class="prog-bar" onclick="scrub(event,${id})"><div class="prog-fill" id="pf-${id}" style="width:${pct}%"></div></div>
       </div>
     </div>`;
@@ -792,10 +814,12 @@ function playR(id){
   refreshCtrl(id);
   const tick=ts=>{
     const ro=get(id);if(!ro||!ro.playing)return;
-    ro.t=Math.min(ro.t+(ts-ro.lastTs)/1000,MAX_CLIP);
+    const dur=ro.duration||MAX_CLIP;
+    ro.t=Math.min(ro.t+(ts-ro.lastTs)/1000,dur);
     ro.lastTs=ts;
     updateProg(id);
-    if(ro.t>=MAX_CLIP){
+    const loopEnd=ro.looping?Math.min(AUTO_LOOP_DUR,dur):dur;
+    if(ro.t>=loopEnd){
       if(ro.looping){ro.t=0;ytCmd(id,'seekTo',[ro.autoStart,true]);}
       else{pauseR(id);return;}
     }
@@ -813,34 +837,40 @@ function pauseR(id){
 
 function seek(id,sec){
   const r=get(id);if(!r)return;
-  r.t=Math.max(0,Math.min(MAX_CLIP,r.t+sec));
+  const dur=r.duration||MAX_CLIP;
+  r.t=Math.max(0,Math.min(dur,r.t+sec));
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
 
 function scrub(e,id){
   const r=get(id);if(!r)return;
+  const dur=r.duration||MAX_CLIP;
   const rect=e.currentTarget.getBoundingClientRect();
-  r.t=Math.max(0,Math.min(MAX_CLIP,(e.clientX-rect.left)/rect.width*MAX_CLIP));
+  r.t=Math.max(0,Math.min(dur,(e.clientX-rect.left)/rect.width*dur));
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
 
 function toggleLoop(id){const r=get(id);if(!r)return;r.looping=!r.looping;refreshCtrl(id);}
 
+function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${String(sec).padStart(2,'0')}`;}
+
 function updateProg(id){
   const r=get(id);if(!r)return;
   const pf=document.getElementById(`pf-${id}`);const td=document.getElementById(`td-${id}`);
-  if(pf) pf.style.width=Math.min((r.t/MAX_CLIP)*100,100).toFixed(1)+'%';
-  if(td) td.textContent=compactMode?`0:${String(Math.floor(r.t)).padStart(2,'0')}`:`0:${String(Math.floor(r.t)).padStart(2,'0')} / 0:40`;
+  const dur=r.duration||MAX_CLIP;
+  if(pf) pf.style.width=Math.min((r.t/dur)*100,100).toFixed(2)+'%';
+  if(td) td.textContent=compactMode?fmtTime(r.t):`${fmtTime(r.t)} / ${fmtTime(dur)}`;
 }
 
 function refreshCtrl(id){
   const r=get(id);const body=document.getElementById(`body-${id}`);if(!r||!body)return;
-  const pb=body.querySelector('.play-btn');const lb=body.querySelector('.loop-btn');const lbls=body.querySelectorAll('.ctrl-lbl');
+  const pb=body.querySelector('.play-btn');const lb=body.querySelector('.loop-btn');
+  const playlbl=document.getElementById(`playlbl-${id}`);
   if(pb){pb.className='ctrl-btn play-btn'+(r.playing?' playing':'');pb.innerHTML=r.playing?'&#9646;&#9646;':'&#9654;';}
   if(lb) lb.className='ctrl-btn loop-btn'+(r.looping?' on':'');
-  if(lbls[1]) lbls[1].textContent=r.playing?'PAUSE':'PLAY';
+  if(playlbl) playlbl.textContent=r.playing?'PAUSE':'PLAY';
 }
 
 function destroyPlayer(r){
@@ -850,9 +880,22 @@ function destroyPlayer(r){
 // ── SYNC MODE ─────────────────────────────────────────────────────────
 function toggleSync(){
   syncMode=!syncMode;
-  if(syncMode){syncT=0;syncPlaying=false;if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}}
-  else{if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}syncPlaying=false;}
-  robots.forEach(r=>{if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}r.playing=false;});
+  if(syncMode){
+    syncT=0;syncPlaying=false;
+    if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}
+    // Seek each video to its own saved autoStart offset
+    robots.forEach(r=>{
+      if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}
+      r.playing=false;
+      r.t=0;
+      ytCmd(r.id,'seekTo',[r.autoStart,true]);
+      ytCmd(r.id,'pauseVideo');
+    });
+  } else {
+    if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}
+    syncPlaying=false;
+    robots.forEach(r=>{if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}r.playing=false;});
+  }
   updateSyncBtn();
   document.getElementById('syncBar').style.display=syncMode?'flex':'none';
   robots.forEach(r=>updateCard(r.id));
@@ -878,7 +921,12 @@ function syncPlay(){
     syncLastTs=ts;
     updateSyncTime();
     robots.forEach(r=>{r.t=syncT;updateProg(r.id);});
-    if(syncT>=MAX_CLIP){syncPause();return;}
+    const allLooping=robots.length>0&&robots.every(r=>r.looping);
+    const syncEnd=allLooping?Math.min(AUTO_LOOP_DUR,MAX_CLIP):MAX_CLIP;
+    if(syncT>=syncEnd){
+      if(allLooping){syncT=0;robots.forEach(r=>{r.t=0;ytCmd(r.id,'seekTo',[r.autoStart,true]);});updateSyncTime();robots.forEach(r=>updateProg(r.id));}
+      else{syncPause();return;}
+    }
     syncRafId=requestAnimationFrame(tick);
   };
   syncRafId=requestAnimationFrame(tick);
@@ -892,7 +940,8 @@ function syncPause(){
 }
 
 function syncSeek(sec){
-  syncT=Math.max(0,Math.min(MAX_CLIP,syncT+sec));
+  const maxT=robots.length>0?Math.min(...robots.map(r=>r.duration||MAX_CLIP)):MAX_CLIP;
+  syncT=Math.max(0,Math.min(maxT,syncT+sec));
   robots.forEach(r=>{r.t=syncT;ytCmd(r.id,'seekTo',[r.autoStart+syncT,true]);updateProg(r.id);});
   updateSyncTime();
 }
@@ -906,20 +955,26 @@ function syncRestart(){
 
 function updateSyncTime(){
   const el=document.getElementById('syncTime');
-  if(el) el.textContent=`0:${String(Math.floor(syncT)).padStart(2,'0')}`;
+  if(el) el.textContent=fmtTime(syncT);
 }
 
 // Keep r.t accurate when user scrubs native YouTube player controls
 window.addEventListener('message', evt => {
   if(evt.origin!=='https://www.youtube.com') return;
   let data; try{data=JSON.parse(evt.data);}catch{return;}
-  if(data.event!=='infoDelivery'||data.info?.currentTime==null) return;
+  if(data.event!=='infoDelivery'||data.info==null) return;
   const r=robots.find(r=>{
     const f=document.getElementById(`yt-iframe-${r.id}`);
     return f&&f.contentWindow===evt.source;
   });
-  if(!r||syncMode) return;
-  r.t=Math.max(0,Math.min(MAX_CLIP,data.info.currentTime-r.autoStart));
+  if(!r) return;
+  // Capture video duration whenever YouTube reports it
+  if(data.info.duration>0) {
+    r.duration=data.info.duration;
+    updateProg(r.id);
+  }
+  if(data.info.currentTime==null||syncMode) return;
+  r.t=Math.max(0,Math.min(r.duration||MAX_CLIP,data.info.currentTime-r.autoStart));
   updateProg(r.id);
 });
 </script>
