@@ -225,9 +225,9 @@ select option{background:#18222d}
       <div class="sync-master-ctrl">
         <button class="ctrl-btn" onclick="syncRestart()" style="width:28px;height:28px;font-size:11px" title="Restart from auto start">&#9632;</button>
         <button class="ctrl-btn" onclick="syncSeek(-1)" style="width:28px;height:28px;font-size:9px" title="-1 second">-1s</button>
-        <button class="ctrl-btn" onclick="syncSeek(-FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="-5 frames">&#9664;&#9664;</button>
+        <button class="ctrl-btn" onclick="syncSeek(-FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="-1/6 second">&#9664;&#9664;</button>
         <button class="ctrl-btn play-btn" id="syncPlayBtn" onclick="syncTogglePlay()" style="width:34px;height:34px;font-size:14px">&#9654;</button>
-        <button class="ctrl-btn" onclick="syncSeek(FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="+5 frames">&#9654;&#9654;</button>
+        <button class="ctrl-btn" onclick="syncSeek(FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="+1/6 second">&#9654;&#9654;</button>
         <button class="ctrl-btn" onclick="syncSeek(1)" style="width:28px;height:28px;font-size:9px" title="+1 second">+1s</button>
         <div class="ctrl-div"></div>
         <div class="time-disp" id="syncTime">0:00</div>
@@ -261,7 +261,7 @@ select option{background:#18222d}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const MAX_ROBOTS = 3, MAX_CLIP = 40, FRAME_SEC = 5/30;
+const MAX_ROBOTS = 3, MAX_CLIP = 120, FRAME_SEC = 1/6;
 const BASE = 'https://www.thebluealliance.com/api/v3';
 let TBA_KEY = '', robots = [], uid = 0;
 let syncMode = false, syncPlaying = false, syncT = 0, syncLastTs = null, syncRafId = null;
