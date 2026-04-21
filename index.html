@@ -25,7 +25,7 @@
 .hbtn.active{background:rgba(197,180,227,.15);border-color:var(--accent);color:var(--accent)}
 .hbtn.active:hover{background:rgba(197,180,227,.25)}
 .hbtn:disabled{opacity:.3;cursor:not-allowed}
- 
+
 /* setup */
 .setup-screen{display:flex;flex-direction:column;gap:14px}
 .setup-card{background:var(--panel);border:0.5px solid var(--border);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:11px}
@@ -44,7 +44,7 @@
 .key-btn:hover{background:#5c1a9e}
 .key-status{font-family:'Share Tech Mono',monospace;font-size:11px;min-height:14px;text-align:center}
 .key-status.ok{color:var(--success)}.key-status.err{color:var(--danger)}.key-status.checking{color:var(--accent);animation:blink .7s infinite}
- 
+
 /* alliance bar */
 .alliance-bar{background:rgba(60,0,100,.15);border:0.5px solid var(--border);border-radius:8px;padding:7px 12px;display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .alliance-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap}
@@ -58,7 +58,7 @@
 .alliance-radio input{accent-color:var(--accent);cursor:pointer}
 .red-opt{color:#ff5555}.blue-opt{color:#5599ff}
 .alliance-status{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px}
- 
+
 /* robots grid */
 .robots-grid{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
 .robot-panel{background:var(--panel);border:0.5px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:220px;min-height:300px;position:relative}
@@ -121,14 +121,14 @@ select option{background:#18222d}
 .sync-bar{background:rgba(197,180,227,.07);border:0.5px solid var(--accent);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .sync-bar-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.5px}
 .sync-master-ctrl{display:flex;align-items:center;gap:8px}
- 
+
 /* match-start offset row */
 .offset-row{background:#101820;border-top:0.5px solid var(--border);padding:5px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0}
 .offset-inp{background:var(--bg);border:0.5px solid var(--border);color:var(--accent);width:54px;padding:3px 6px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:11px;text-align:center}
 .offset-inp:focus{outline:none;border-color:var(--accent)}
 .offset-btn{width:auto;padding:0 8px;height:28px;font-size:9px;font-family:'Share Tech Mono',monospace;letter-spacing:.5px}
 .offset-mark-btn.set{border-color:var(--warn);color:var(--warn);background:rgba(249,158,11,.1)}
- 
+
 /* ── COMPACT MODE — applied via #app.compact ── */
 #app.compact .logo{display:none}
 #app.compact .header{padding:4px 14px;margin-bottom:4px;border-bottom:none}
@@ -139,7 +139,7 @@ select option{background:#18222d}
 #app.compact .rcard-body{padding:0!important;gap:0!important}
 #app.compact .video-wrap{border:none!important;border-radius:0!important;height:auto!important;aspect-ratio:16/9!important}
 #app.compact .ctrl-bar,#app.compact .offset-row,#app.compact .row2,#app.compact .vid-ph{display:none!important}
- 
+
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 600px) {
   #app{padding:10px;border-radius:0;min-height:100dvh}
@@ -172,7 +172,7 @@ select option{background:#18222d}
   .step-txt{font-size:12px}
 }
 </style>
- 
+
 <div id="app">
   <div class="header">
     <div class="logo">
@@ -190,7 +190,7 @@ select option{background:#18222d}
       <button class="hbtn accent" id="addBtn" style="display:none" onclick="openModal()">+ ADD ROBOT</button>
     </div>
   </div>
- 
+
   <div id="setupScreen" class="setup-screen">
     <div class="setup-card">
       <div class="setup-title">// CONNECT TO THE BLUE ALLIANCE</div>
@@ -206,7 +206,7 @@ select option{background:#18222d}
       <div class="key-status" id="keyStatus"></div>
     </div>
   </div>
- 
+
   <div id="mainScreen" style="display:none;flex-direction:column">
     <div id="allianceBar" class="alliance-bar" style="display:none">
       <span class="alliance-lbl">EVENT</span>
@@ -220,7 +220,7 @@ select option{background:#18222d}
       <button class="hbtn accent" id="allianceFillBtn" onclick="fillAlliance()" disabled>FILL</button>
       <span class="alliance-status" id="allianceStatus"></span>
     </div>
- 
+
     <div id="syncBar" style="display:none" class="sync-bar">
       <div class="sync-bar-txt">&#9679; SYNC MODE — all panels share playback</div>
       <div class="sync-master-ctrl">
@@ -231,10 +231,12 @@ select option{background:#18222d}
         <button class="ctrl-btn" onclick="syncSeek(FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="+1/6 second">&#9654;&#9654;</button>
         <button class="ctrl-btn" onclick="syncSeek(1)" style="width:28px;height:28px;font-size:9px" title="+1 second">+1s</button>
         <div class="ctrl-div"></div>
+        <button class="ctrl-btn loop-btn" id="syncLoopBtn" onclick="toggleSyncLoop()" title="Loop autonomous period (0 to 21s)">&#8635;</button>
+        <div class="ctrl-div"></div>
         <div class="time-disp" id="syncTime">0:00</div>
       </div>
     </div>
- 
+
     <div class="robots-grid" id="robotsGrid">
       <div class="empty" id="emptyState">
         <div class="empty-icon">🤖</div>
@@ -243,9 +245,9 @@ select option{background:#18222d}
       </div>
     </div>
   </div>
- 
+
   <div class="foot" id="foot" style="display:none">DATA: THE BLUE ALLIANCE · VIDEOS: FIRST 40s · OFFSETS: SHARED VIA FIRESTORE</div>
- 
+
   <div class="modal-ov" id="modalOv" style="display:none">
     <div class="modal">
       <div class="modal-t">// ADD ROBOT</div>
@@ -258,17 +260,17 @@ select option{background:#18222d}
     </div>
   </div>
 </div>
- 
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const MAX_ROBOTS = 3, MAX_CLIP = 120, FRAME_SEC = 1/6, AUTO_LOOP_DUR = 21;
+const MAX_ROBOTS = 3, MAX_CLIP = 120, FRAME_SEC = 1/6, AUTO_LOOP_DUR = 23;
 const BASE = 'https://www.thebluealliance.com/api/v3';
 let TBA_KEY = '', robots = [], uid = 0;
-let syncMode = false, syncPlaying = false, syncT = 0, syncLastTs = null, syncRafId = null;
+let syncMode = false, syncPlaying = false, syncLooping = false, syncT = 0, syncLastTs = null, syncRafId = null;
 let compactMode = false;
 let allianceEventKey = '', allianceMatchList = [];
- 
+
 firebase.initializeApp({
   apiKey: "AIzaSyDGoE5Bs32zQRaRAD9mbX_u9r1fTN3-eK0",
   authDomain: "autotrack-ae430.firebaseapp.com",
@@ -278,7 +280,7 @@ firebase.initializeApp({
   appId: "1:736491351752:web:47d334824478aaba46bffd"
 });
 const db = firebase.firestore();
- 
+
 // ── TBA API ──────────────────────────────────────────────────────────
 const tba = async path => {
   const url = `${BASE}${path}${path.includes('?')?'&':'?'}X-TBA-Auth-Key=${encodeURIComponent(TBA_KEY)}`;
@@ -286,7 +288,7 @@ const tba = async path => {
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   return r.json();
 };
- 
+
 // ── AUTH / SETUP ─────────────────────────────────────────────────────
 async function submitKey() {
   const key = document.getElementById('keyInp').value.trim();
@@ -304,7 +306,7 @@ async function submitKey() {
   }
 }
 document.getElementById('keyInp').addEventListener('keydown', e => { if(e.key==='Enter') submitKey(); });
- 
+
 function enterApp() {
   document.getElementById('setupScreen').style.display = 'none';
   const ms = document.getElementById('mainScreen'); ms.style.display='flex';
@@ -317,7 +319,7 @@ function showSetup() {
   ['addBtn','changeKeyBtn','syncBtn','allianceBtn','compactBtn','foot'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('keyStatus').textContent='';
 }
- 
+
 // ── MODAL ────────────────────────────────────────────────────────────
 function openModal() {
   if(robots.length>=MAX_ROBOTS) return;
@@ -329,7 +331,7 @@ function openModal() {
 function closeModal() { document.getElementById('modalOv').style.display='none'; }
 document.getElementById('teamInp').addEventListener('keydown',e=>{if(e.key==='Enter')confirmAdd();if(e.key==='Escape')closeModal();});
 document.getElementById('modalOv').addEventListener('click',e=>{if(e.target.id==='modalOv')closeModal();});
- 
+
 async function confirmAdd() {
   const val = document.getElementById('teamInp').value.trim();
   const errEl = document.getElementById('modalErr');
@@ -341,7 +343,7 @@ async function confirmAdd() {
   renderAll();
   await loadEvents(id);
 }
- 
+
 function pushRobot(team) {
   const id = ++uid;
   robots.push({id,team,events:[],matches:[],selEvent:'',selMatch:'',videoKey:null,loaded:false,
@@ -349,7 +351,7 @@ function pushRobot(team) {
     t:0,lastTs:null,rafId:null,autoStart:0,duration:0,offsetUnsub:null,player:null,playerReady:false,playerKey:null});
   return id;
 }
- 
+
 function removeRobot(id) {
   const r=get(id);
   if(r?.rafId) cancelAnimationFrame(r.rafId);
@@ -359,9 +361,9 @@ function removeRobot(id) {
   if(syncMode && robots.length===0){syncMode=false;updateSyncBtn();}
   renderAll();
 }
- 
+
 const get = id => robots.find(r=>r.id===id);
- 
+
 // ── TBA LOADERS ──────────────────────────────────────────────────────
 async function loadEvents(id) {
   const r=get(id); if(!r) return;
@@ -376,7 +378,7 @@ async function loadEvents(id) {
     updateCard(id);
   } catch(e) { r.loadingEvents=false; r.error='Fetch failed: '+e.message; updateCard(id); }
 }
- 
+
 async function loadMatches(id) {
   const r=get(id); if(!r||!r.selEvent) return;
   r.matches=[]; r.selMatch=''; r.videoKey=null; r.loaded=false; r.loadingMatches=true;
@@ -388,7 +390,7 @@ async function loadMatches(id) {
     r.loadingMatches=false; updateCard(id);
   } catch(e) { r.loadingMatches=false; updateCard(id); }
 }
- 
+
 async function loadVideo(id) {
   const r=get(id); if(!r||!r.selMatch) return;
   r.videoKey=null; r.loaded=false; updateCard(id);
@@ -398,7 +400,7 @@ async function loadVideo(id) {
     r.videoKey=yt?yt.key:null; r.loaded=true; updateCard(id);
   } catch(e) { r.loaded=true; updateCard(id); }
 }
- 
+
 const matchSort = (a,b) => {
   const ord={qm:0,ef:1,qf:2,sf:3,f:4};
   const d=(ord[a.comp_level]??9)-(ord[b.comp_level]??9);
@@ -406,7 +408,7 @@ const matchSort = (a,b) => {
   if(a.set_number!==b.set_number) return a.set_number-b.set_number;
   return a.match_number-b.match_number;
 };
- 
+
 function onEventChange(id,val) {
   const r=get(id); if(!r) return;
   unsubscribeOffset(r);
@@ -422,13 +424,13 @@ function onMatchChange(id,val) {
   updateCard(id);
   if(val){ subscribeOffset(id); loadVideo(id); }
 }
- 
+
 function mLabel(m) {
   const lv={qm:'Qual',ef:'EF',qf:'QF',sf:'SF',f:'Final'};
   const l=lv[m.comp_level]||m.comp_level.toUpperCase();
   return m.comp_level==='qm'?`${l} ${m.match_number}`:`${l} ${m.set_number}-${m.match_number}`;
 }
- 
+
 // ── FIRESTORE OFFSET PERSISTENCE ─────────────────────────────────────
 function subscribeOffset(id) {
   const r=get(id); if(!r||!r.selMatch) return;
@@ -458,11 +460,11 @@ function subscribeOffset(id) {
     }
   );
 }
- 
+
 function unsubscribeOffset(r) {
   if(r?.offsetUnsub){r.offsetUnsub();r.offsetUnsub=null;}
 }
- 
+
 async function saveOffset(matchKey, val) {
   try {
     if(val>0){
@@ -476,7 +478,7 @@ async function saveOffset(matchKey, val) {
     return false;
   }
 }
- 
+
 async function markStartAndSave(id) {
   const r=get(id); if(!r) return;
   // Absolute YouTube timestamp = old autoStart + relative t (or syncT in sync mode)
@@ -495,9 +497,9 @@ async function markStartAndSave(id) {
     setTimeout(()=>{btn.textContent=orig;btn.style.color='';updateOffsetRow(id);},1200);
   }
 }
- 
+
 function markStart(id) { markStartAndSave(id); }
- 
+
 function clearStart(id) {
   const r=get(id); if(!r) return;
   r.autoStart=0;
@@ -506,7 +508,7 @@ function clearStart(id) {
   if(r.selMatch) saveOffset(r.selMatch, 0);
   updateOffsetRow(id);
 }
- 
+
 function setStartOffset(id, val) {
   const r=get(id); if(!r) return;
   r.autoStart=Math.max(0, parseFloat(val)||0);
@@ -514,7 +516,7 @@ function setStartOffset(id, val) {
   updateProg(id);
   if(r.selMatch) saveOffset(r.selMatch, r.autoStart);
 }
- 
+
 function updateOffsetRow(id) {
   const r=get(id); if(!r) return;
   const inp=document.getElementById(`oi-${id}`);
@@ -524,7 +526,7 @@ function updateOffsetRow(id) {
   if(markBtn) markBtn.className='ctrl-btn offset-btn offset-mark-btn'+(r.autoStart>0?' set':'');
   if(clrBtn) clrBtn.disabled=r.autoStart===0;
 }
- 
+
 // ── ALLIANCE QUICK-ADD ───────────────────────────────────────────────
 function toggleAllianceBar() {
   const bar=document.getElementById('allianceBar');
@@ -533,7 +535,7 @@ function toggleAllianceBar() {
   bar.style.display=visible?'none':'flex';
   btn.className=visible?'hbtn':'hbtn active';
 }
- 
+
 async function fetchAllianceMatches() {
   const key=document.getElementById('allianceEventInp').value.trim();
   if(!key) return;
@@ -556,7 +558,7 @@ async function fetchAllianceMatches() {
   }
   fetchBtn.textContent='FETCH'; fetchBtn.disabled=false;
 }
- 
+
 async function fillAlliance() {
   const matchKey=document.getElementById('allianceMatchSel').value;
   const alliance=document.querySelector('input[name="alliance"]:checked')?.value||'red';
@@ -570,7 +572,7 @@ async function fillAlliance() {
     const teamKeys=matchData.alliances?.[alliance]?.team_keys||[];
     const teams=teamKeys.map(k=>k.replace('frc','')).slice(0,3);
     if(teams.length===0){st.textContent='No teams found';return;}
- 
+
     // Clear existing robots then add alliance teams
     [...robots].forEach(r=>removeRobot(r.id));
     const ids=[];
@@ -579,7 +581,7 @@ async function fillAlliance() {
       ids.push(pushRobot(t));
     }
     renderAll();
- 
+
     st.textContent=`Filling ${teams.join(', ')}...`;
     await Promise.all(ids.map((id,i)=>loadEventsAndAutoSelect(id, allianceEventKey)));
     st.textContent=`✓ ${alliance.toUpperCase()} alliance loaded`;
@@ -588,7 +590,7 @@ async function fillAlliance() {
   }
   fillBtn.textContent='FILL'; fillBtn.disabled=false;
 }
- 
+
 async function loadEventsAndAutoSelect(id, eventKey) {
   const r=get(id); if(!r) return;
   try {
@@ -611,7 +613,7 @@ async function loadEventsAndAutoSelect(id, eventKey) {
     ro.loadingEvents=false; ro.error='Fetch failed: '+e.message; updateCard(id);
   }
 }
- 
+
 // ── COMPACT MODE ──────────────────────────────────────────────────────
 function toggleCompact() {
   compactMode=!compactMode;
@@ -625,7 +627,7 @@ function toggleCompact() {
     updateCard(r.id);
   });
 }
- 
+
 // ── RENDER ────────────────────────────────────────────────────────────
 function renderAll() {
   const grid=document.getElementById('robotsGrid');
@@ -638,7 +640,7 @@ function renderAll() {
   existIds.forEach(id=>{if(!nowIds.has(id)) grid.querySelector(`[data-rid="${id}"]`)?.remove();});
   robots.forEach(r=>{if(!existIds.has(r.id)) grid.appendChild(mkPanel(r)); updateCard(r.id);});
 }
- 
+
 function mkPanel(r) {
   const d=document.createElement('div');
   d.className='robot-panel'; d.dataset.rid=r.id;
@@ -656,7 +658,7 @@ function mkPanel(r) {
   if(!compactMode) initResize(d);
   return d;
 }
- 
+
 function initResize(panel) {
   const handle=panel.querySelector('.resize-handle');
   let startX,startY,startW,startH;
@@ -673,7 +675,7 @@ function initResize(panel) {
     document.addEventListener('mouseup',onUp);
   });
 }
- 
+
 function patchStatus(id) {
   const r=get(id); if(!r) return;
   const dot=document.getElementById(`dot-${id}`); const stxt=document.getElementById(`stxt-${id}`);
@@ -683,17 +685,17 @@ function patchStatus(id) {
   else if(r.loaded&&r.videoKey){dot.className='dot on';stxt.textContent='READY';}
   else{dot.className='dot';stxt.textContent='IDLE';}
 }
- 
+
 function updateCard(id) {
   const r=get(id); if(!r) return;
   const body=document.getElementById(`body-${id}`); if(!body) return;
   patchStatus(id);
   const panel=document.querySelector(`[data-rid="${id}"]`);
   if(panel) panel.className='robot-panel'+(syncMode?' synced':'');
- 
+
   if(r.loadingEvents){body.innerHTML=`<div class="loading-txt">// CONTACTING TBA...</div>`;return;}
   if(r.error){body.innerHTML=`<div class="err-txt">&#9888; ${r.error}</div>`;return;}
- 
+
   // ── COMPACT MODE RENDERING ──
   if(compactMode){
     body.className='rcard-body';
@@ -701,7 +703,7 @@ function updateCard(id) {
     populateVideoWrap(r, id);
     return;
   }
- 
+
   // ── NORMAL MODE RENDERING ──
   body.className='rcard-body';
   const evOpts=r.events.map(e=>`<option value="${e.key}"${r.selEvent===e.key?' selected':''}>${e.short_name||e.name}</option>`).join('');
@@ -710,7 +712,7 @@ function updateCard(id) {
   const dur=r.duration||MAX_CLIP;
   const pct=Math.min((t/dur)*100,100).toFixed(1);
   const isPlaying=syncMode?syncPlaying:r.playing;
- 
+
   const ctrlBar=syncMode?'':`
     <div class="ctrl-bar">
       <div class="ctrl-btns-row">
@@ -746,7 +748,7 @@ function updateCard(id) {
         <div class="prog-bar" onclick="scrub(event,${id})"><div class="prog-fill" id="pf-${id}" style="width:${pct}%"></div></div>
       </div>
     </div>`;
- 
+
   const fsWarn=r.fsError?`<span title="Firestore permission denied — check security rules" style="color:var(--danger);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.5px">⚠ FS</span>`:'';
   const offsetRow=(r.loaded&&r.videoKey)?`
     <div class="offset-row">
@@ -756,7 +758,7 @@ function updateCard(id) {
       <button class="ctrl-btn offset-btn" onclick="clearStart(${id})"${r.autoStart===0?' disabled':''} title="Clear match start offset">CLR</button>
       ${fsWarn}
     </div>`:'';
- 
+
   body.innerHTML=`
     <div class="row2">
       <div><div class="field-lbl">Event</div>
@@ -771,10 +773,10 @@ function updateCard(id) {
     <div class="video-wrap" id="vwrap-${id}"></div>
     ${ctrlBar}
     ${offsetRow}`;
- 
+
   populateVideoWrap(r, id);
 }
- 
+
 function populateVideoWrap(r, id) {
   const wrap=document.getElementById(`vwrap-${id}`);
   if(!wrap) return;
@@ -797,16 +799,16 @@ function populateVideoWrap(r, id) {
     wrap.appendChild(iframe);
   }
 }
- 
+
 // ── YOUTUBE CONTROL ───────────────────────────────────────────────────
 function ytCmd(id, func, args){
   const iframe=document.getElementById(`yt-iframe-${id}`);
   if(!iframe) return;
   iframe.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[]}),'https://www.youtube.com');
 }
- 
+
 function togglePlay(id){const r=get(id);if(!r||!r.videoKey)return;r.playing?pauseR(id):playR(id);}
- 
+
 function playR(id){
   const r=get(id);if(!r)return;
   ytCmd(id,'playVideo');
@@ -827,14 +829,14 @@ function playR(id){
   };
   r.rafId=requestAnimationFrame(tick);
 }
- 
+
 function pauseR(id){
   const r=get(id);if(!r)return;
   ytCmd(id,'pauseVideo');
   r.playing=false;if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}
   refreshCtrl(id);
 }
- 
+
 function seek(id,sec){
   const r=get(id);if(!r)return;
   const dur=r.duration||MAX_CLIP;
@@ -842,7 +844,7 @@ function seek(id,sec){
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
- 
+
 function scrub(e,id){
   const r=get(id);if(!r)return;
   const dur=r.duration||MAX_CLIP;
@@ -851,11 +853,11 @@ function scrub(e,id){
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
- 
+
 function toggleLoop(id){const r=get(id);if(!r)return;r.looping=!r.looping;refreshCtrl(id);}
- 
+
 function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${String(sec).padStart(2,'0')}`;}
- 
+
 function updateProg(id){
   const r=get(id);if(!r)return;
   const pf=document.getElementById(`pf-${id}`);const td=document.getElementById(`td-${id}`);
@@ -863,7 +865,7 @@ function updateProg(id){
   if(pf) pf.style.width=Math.min((r.t/dur)*100,100).toFixed(2)+'%';
   if(td) td.textContent=compactMode?fmtTime(r.t):`${fmtTime(r.t)} / ${fmtTime(dur)}`;
 }
- 
+
 function refreshCtrl(id){
   const r=get(id);const body=document.getElementById(`body-${id}`);if(!r||!body)return;
   const pb=body.querySelector('.play-btn');const lb=body.querySelector('.loop-btn');
@@ -872,11 +874,11 @@ function refreshCtrl(id){
   if(lb) lb.className='ctrl-btn loop-btn'+(r.looping?' on':'');
   if(playlbl) playlbl.textContent=r.playing?'PAUSE':'PLAY';
 }
- 
+
 function destroyPlayer(r){
   if(r){r.playerReady=false;r.playerKey=null;}
 }
- 
+
 // ── SYNC MODE ─────────────────────────────────────────────────────────
 function toggleSync(){
   syncMode=!syncMode;
@@ -894,21 +896,22 @@ function toggleSync(){
   } else {
     if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}
     syncPlaying=false;
+    syncLooping=false;
     robots.forEach(r=>{if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}r.playing=false;});
   }
   updateSyncBtn();
   document.getElementById('syncBar').style.display=syncMode?'flex':'none';
   robots.forEach(r=>updateCard(r.id));
 }
- 
+
 function updateSyncBtn(){
   const btn=document.getElementById('syncBtn');
   btn.className=syncMode?'hbtn sync-on':'hbtn';
   btn.textContent=syncMode?'⏹ DESYNC VIDEOS':'▶▶ SYNC VIDEOS';
 }
- 
+
 function syncTogglePlay(){syncPlaying?syncPause():syncPlay();}
- 
+
 function syncPlay(){
   syncPlaying=true;
   syncLastTs=performance.now();
@@ -921,43 +924,48 @@ function syncPlay(){
     syncLastTs=ts;
     updateSyncTime();
     robots.forEach(r=>{r.t=syncT;updateProg(r.id);});
-    const allLooping=robots.length>0&&robots.every(r=>r.looping);
-    const syncEnd=allLooping?Math.min(AUTO_LOOP_DUR,MAX_CLIP):MAX_CLIP;
+    const syncEnd=syncLooping?Math.min(AUTO_LOOP_DUR,MAX_CLIP):MAX_CLIP;
     if(syncT>=syncEnd){
-      if(allLooping){syncT=0;robots.forEach(r=>{r.t=0;ytCmd(r.id,'seekTo',[r.autoStart,true]);});updateSyncTime();robots.forEach(r=>updateProg(r.id));}
+      if(syncLooping){syncT=0;robots.forEach(r=>{r.t=0;ytCmd(r.id,'seekTo',[r.autoStart,true]);});updateSyncTime();robots.forEach(r=>updateProg(r.id));}
       else{syncPause();return;}
     }
     syncRafId=requestAnimationFrame(tick);
   };
   syncRafId=requestAnimationFrame(tick);
 }
- 
+
 function syncPause(){
   robots.forEach(r=>ytCmd(r.id,'pauseVideo'));
   syncPlaying=false;if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}
   const spb=document.getElementById('syncPlayBtn');
   if(spb){spb.className='ctrl-btn play-btn';spb.innerHTML='&#9654;';}
 }
- 
+
 function syncSeek(sec){
   const maxT=robots.length>0?Math.min(...robots.map(r=>r.duration||MAX_CLIP)):MAX_CLIP;
   syncT=Math.max(0,Math.min(maxT,syncT+sec));
   robots.forEach(r=>{r.t=syncT;ytCmd(r.id,'seekTo',[r.autoStart+syncT,true]);updateProg(r.id);});
   updateSyncTime();
 }
- 
+
 function syncRestart(){
   syncPause();
   syncT=0;
   robots.forEach(r=>{r.t=0;ytCmd(r.id,'seekTo',[r.autoStart,true]);updateProg(r.id);});
   updateSyncTime();
 }
- 
+
+function toggleSyncLoop(){
+  syncLooping=!syncLooping;
+  const btn=document.getElementById('syncLoopBtn');
+  if(btn) btn.className='ctrl-btn loop-btn'+(syncLooping?' on':'');
+}
+
 function updateSyncTime(){
   const el=document.getElementById('syncTime');
   if(el) el.textContent=fmtTime(syncT);
 }
- 
+
 // Keep r.t accurate when user scrubs native YouTube player controls
 window.addEventListener('message', evt => {
   if(evt.origin!=='https://www.youtube.com') return;
