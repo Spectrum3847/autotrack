@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
@@ -106,6 +107,57 @@ select option{background:#0d1b2a}
 .sync-bar{background:rgba(0,230,118,.08);border:0.5px solid var(--success);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .sync-bar-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--success);letter-spacing:.5px}
 .sync-master-ctrl{display:flex;align-items:center;gap:8px}
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 600px) {
+  /* Overall app padding */
+  #app { padding: 10px; border-radius: 0; min-height: 100dvh; }
+  #app::before { border-radius: 0; }
+
+  /* Header: stack logo and buttons */
+  .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .hbtns { width: 100%; justify-content: flex-start; }
+  .hbtn { font-size: 9px; padding: 7px 10px; flex: 1; text-align: center; }
+
+  /* Robot panels: full width, fixed reasonable height */
+  .robots-grid { flex-direction: column; gap: 14px; }
+  .robot-panel { width: 100% !important; height: auto !important; min-height: 0; }
+
+  /* Card body: a little more breathing room */
+  .rcard-body { gap: 9px; }
+
+  /* Event/match selects: stack vertically on small screens */
+  .row2 { grid-template-columns: 1fr; gap: 7px; }
+
+  /* Video: taller on mobile so it's actually watchable */
+  .video-wrap { height: 210px; }
+
+  /* Control bar: spread out for fat fingers */
+  .ctrl-bar { gap: 10px; padding: 10px; flex-wrap: nowrap; justify-content: space-around; }
+  .ctrl-btn { width: 38px; height: 38px; font-size: 15px; }
+  .play-btn { width: 46px; height: 46px; font-size: 17px; }
+  .ctrl-lbl { font-size: 7px; }
+  .prog-bar { width: 60px; }
+  .time-disp { font-size: 10px; min-width: 40px; }
+
+  /* Sync bar */
+  .sync-bar { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .sync-master-ctrl { width: 100%; justify-content: center; }
+
+  /* Modal */
+  .modal-ov { align-items: flex-end; padding-bottom: 0; border-radius: 0; }
+  .modal { width: 100%; border-radius: 12px 12px 0 0; padding: 24px 20px 32px; }
+
+  /* Team number bigger for readability */
+  .team-num { font-size: 24px; }
+
+  /* Setup card */
+  .setup-card { padding: 14px; }
+  .key-row { flex-direction: column; }
+  .key-btn { width: 100%; padding: 10px; font-size: 15px; }
+  .key-inp { font-size: 13px; padding: 10px; }
+  .step-txt { font-size: 12px; }
+}
 </style>
 
 <div id="app">
