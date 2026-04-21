@@ -433,9 +433,15 @@ function subscribeOffset(id) {
     snap => {
       const ro=get(id); if(!ro) return;
       ro.autoStart = snap.exists ? (snap.data().t||0) : 0;
+      ro.fsError = false;
       updateOffsetRow(id);
     },
-    () => {} // silently ignore permission errors
+    err => {
+      const ro=get(id); if(!ro) return;
+      ro.fsError = true;
+      updateOffsetRow(id);
+      console.warn('Firestore read failed:', err.code, err.message);
+    }
   );
 }
 
@@ -450,15 +456,29 @@ async function saveOffset(matchKey, val) {
     } else {
       await db.collection('offsets').doc(matchKey).delete();
     }
-  } catch(e){}
+    return true;
+  } catch(e){
+    console.warn('Firestore write failed:', e.code, e.message);
+    return false;
+  }
 }
 
-function markStart(id) {
+async function markStartAndSave(id) {
   const r=get(id); if(!r) return;
   r.autoStart = syncMode ? syncT : r.t;
-  if(r.selMatch) saveOffset(r.selMatch, r.autoStart);
   updateOffsetRow(id);
+  if(!r.selMatch) return;
+  const ok = await saveOffset(r.selMatch, r.autoStart);
+  const btn=document.querySelector(`[data-mark-id="${id}"]`);
+  if(btn){
+    const orig=btn.textContent;
+    btn.textContent=ok?'✓ SAVED':'✗ ERR';
+    btn.style.color=ok?'var(--success)':'var(--danger)';
+    setTimeout(()=>{btn.textContent=orig;btn.style.color='';updateOffsetRow(id);},1200);
+  }
 }
+
+function markStart(id) { markStartAndSave(id); }
 
 function clearStart(id) {
   const r=get(id); if(!r) return;
@@ -694,12 +714,14 @@ function updateCard(id) {
       </div>
     </div>`;
 
+  const fsWarn=r.fsError?`<span title="Firestore permission denied — check security rules" style="color:var(--danger);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.5px">⚠ FS</span>`:'';
   const offsetRow=(r.loaded&&r.videoKey)?`
     <div class="offset-row">
       <span class="ctrl-lbl">AUTO START</span>
       <input type="number" class="offset-inp" id="oi-${id}" value="${r.autoStart.toFixed(1)}" min="0" step="0.5" onchange="setStartOffset(${id},this.value)">
       <button class="ctrl-btn offset-btn offset-mark-btn${r.autoStart>0?' set':''}" data-mark-id="${id}" onclick="markStart(${id})" title="Mark current position as match start">MARK</button>
       <button class="ctrl-btn offset-btn" onclick="clearStart(${id})"${r.autoStart===0?' disabled':''} title="Clear match start offset">CLR</button>
+      ${fsWarn}
     </div>`:'';
 
   body.innerHTML=`
@@ -732,7 +754,7 @@ function populateVideoWrap(r, id) {
   } else {
     const iframe=document.createElement('iframe');
     iframe.id=`yt-iframe-${id}`;
-    iframe.src=`https://www.youtube.com/embed/${r.videoKey}?controls=1&rel=0&playsinline=1&enablejsapi=1`;
+    iframe.src=`https://www.youtube.com/embed/${r.videoKey}?controls=1&rel=0&playsinline=1&enablejsapi=1&mute=1`;
     iframe.title='YouTube video player';
     iframe.frameBorder='0';
     iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
