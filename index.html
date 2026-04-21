@@ -4,24 +4,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d1b2a;--panel:#0f1923;--card:#12202e;--border:#1e3a5f;
-  --accent:#00c2ff;--accent2:#ff6b2b;--txt:#e8f4fd;--muted:#5a8aa0;
+  --bg:#08000f;--panel:#0f0018;--card:#160022;--border:#330080;
+  --accent:#7b33ff;--accent2:#c084fc;--txt:#ffffff;--muted:#7a55aa;
   --success:#00e676;--danger:#ff4444;--warn:#ffc107;
 }
 #app{font-family:'Rajdhani',sans-serif;background:var(--bg);min-height:420px;padding:14px;border-radius:12px;color:var(--txt);position:relative}
-#app::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#1a73e8,var(--accent),var(--accent2));border-radius:12px 12px 0 0;pointer-events:none}
+#app::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#330080,#7b33ff,#c084fc);border-radius:12px 12px 0 0;pointer-events:none}
 .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:0.5px solid var(--border)}
 .logo{display:flex;align-items:center;gap:8px}
-.logo-icon{width:30px;height:30px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:#000;font-weight:bold}
+.logo-icon{width:30px;height:30px;background:#330080;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:12px;color:#fff;font-weight:bold}
 .logo-text{font-size:17px;font-weight:700;letter-spacing:1px}
 .logo-sub{font-size:9px;color:var(--muted);letter-spacing:2px;font-family:'Share Tech Mono',monospace}
 .hbtns{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .hbtn{background:none;border:0.5px solid var(--border);color:var(--muted);padding:6px 11px;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;letter-spacing:.5px}
 .hbtn:hover{border-color:var(--muted);color:var(--txt)}
-.hbtn.accent{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
-.hbtn.accent:hover{background:#00deff}
+.hbtn.accent{background:#330080;border-color:#330080;color:#fff;font-weight:700}
+.hbtn.accent:hover{background:#5511aa}
 .hbtn.sync-on{background:rgba(0,230,118,.15);border-color:var(--success);color:var(--success)}
 .hbtn.sync-on:hover{background:rgba(0,230,118,.25)}
+.hbtn.active{background:rgba(123,51,255,.2);border-color:var(--accent);color:var(--accent)}
+.hbtn.active:hover{background:rgba(123,51,255,.3)}
 .hbtn:disabled{opacity:.3;cursor:not-allowed}
 
 /* setup */
@@ -30,7 +32,7 @@
 .setup-title{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:1px}
 .setup-steps{display:flex;flex-direction:column;gap:7px}
 .step{display:flex;gap:9px;align-items:flex-start}
-.step-num{font-family:'Share Tech Mono',monospace;font-size:10px;color:#000;background:var(--accent);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-weight:700}
+.step-num{font-family:'Share Tech Mono',monospace;font-size:10px;color:#fff;background:#330080;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-weight:700}
 .step-txt{font-size:13px;color:var(--txt);line-height:1.5}
 .step-txt a{color:var(--accent);text-decoration:none}
 .step-txt a:hover{text-decoration:underline}
@@ -38,45 +40,58 @@
 .key-inp{background:var(--card);border:0.5px solid var(--border);color:var(--txt);padding:8px 10px;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:12px;flex:1}
 .key-inp:focus{outline:none;border-color:var(--accent)}
 .key-inp::placeholder{color:var(--muted)}
-.key-btn{background:var(--accent);color:#000;border:none;padding:8px 14px;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
-.key-btn:hover{background:#00deff}
+.key-btn{background:#330080;color:#fff;border:none;padding:8px 14px;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.key-btn:hover{background:#5511aa}
 .key-status{font-family:'Share Tech Mono',monospace;font-size:11px;min-height:14px;text-align:center}
 .key-status.ok{color:var(--success)}.key-status.err{color:var(--danger)}.key-status.checking{color:var(--accent);animation:blink .7s infinite}
 
-/* robots grid - resizable */
+/* alliance bar */
+.alliance-bar{background:rgba(51,0,128,.15);border:0.5px solid var(--border);border-radius:8px;padding:7px 12px;display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.alliance-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap}
+.alliance-evt-inp{background:var(--card);border:0.5px solid var(--border);color:var(--txt);padding:5px 8px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;width:140px}
+.alliance-evt-inp:focus{outline:none;border-color:var(--accent)}
+.alliance-evt-inp::placeholder{color:var(--muted)}
+.alliance-sel{background:var(--card);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%237a55aa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+.alliance-sel:disabled{opacity:.4;cursor:not-allowed}
+.alliance-sel option{background:#0f0018}
+.alliance-radio{font-family:'Share Tech Mono',monospace;font-size:10px;display:flex;align-items:center;gap:4px;cursor:pointer;letter-spacing:.5px}
+.alliance-radio input{accent-color:var(--accent);cursor:pointer}
+.red-opt{color:#ff5555}.blue-opt{color:#5599ff}
+.alliance-status{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px}
+
+/* robots grid */
 .robots-grid{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+.robots-grid.compact{flex-direction:column;align-items:stretch;gap:6px}
 .robot-panel{background:var(--panel);border:0.5px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;min-width:220px;min-height:300px;position:relative}
 .robot-panel.synced{border-color:var(--success)}
 .resize-handle{position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:se-resize;z-index:10}
 .resize-handle::after{content:'';position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);border-radius:1px}
-.rcard-head{background:#0a1520;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border);flex-shrink:0}
+.rcard-head{background:#0a0012;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--border);flex-shrink:0}
 .team-num{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--accent)}
 .team-lbl{font-size:9px;color:var(--muted);letter-spacing:1px}
 .remove-btn{background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:all .15s}
 .remove-btn:hover{color:var(--danger);background:rgba(255,68,68,.1)}
 .rcard-body{padding:8px 10px;display:flex;flex-direction:column;gap:7px;flex:1;overflow:hidden}
+.rcard-body.compact-body{padding:0;gap:0}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .field-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;font-family:'Share Tech Mono',monospace;margin-bottom:2px}
-select{background:var(--card);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:12px;width:100%;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%235a8aa0'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+select{background:var(--card);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:12px;width:100%;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%237a55aa'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 select:focus{outline:none;border-color:var(--accent)}
 select:disabled{opacity:.4;cursor:not-allowed}
-select option{background:#0d1b2a}
-.video-wrap{border-radius:6px;overflow:hidden;border:0.5px solid var(--border);background:#060e16;height:190px;position:relative;}
-.video-wrap iframe{width:100%;height:100%;border:none;display:block;}
-.vid-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--muted);font-size:11px;font-family:'Share Tech Mono',monospace;text-align:center;padding:10px;height:100%;}
-.yt-card{width:100%;height:100%;display:flex;flex-direction:column;gap:6px;padding:6px}
-.yt-player{flex:1;min-height:110px;border-radius:6px;overflow:hidden;background:#09131d}
-.yt-note{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--warn);line-height:1.5;padding:0 2px}
-.yt-link{display:inline-flex;align-items:center;gap:5px;color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:10px;text-decoration:none;border:0.5px solid var(--border);padding:4px 8px;border-radius:4px;transition:all .15s;margin-top:4px}
-.yt-link:hover{border-color:var(--accent);background:rgba(0,194,255,.08)}
-.ctrl-bar{background:#0a1520;border-top:0.5px solid var(--border);padding:7px 10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+select option{background:#0f0018}
+.video-wrap{border-radius:6px;overflow:hidden;border:0.5px solid var(--border);background:#060008;height:190px;position:relative}
+.video-wrap.compact-video{border-radius:0;border-left:none;border-right:none;border-top:none;height:220px}
+.video-wrap iframe{width:100%;height:100%;border:none;display:block}
+.vid-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--muted);font-size:11px;font-family:'Share Tech Mono',monospace;text-align:center;padding:10px;height:100%}
+.ctrl-bar{background:#0a0012;border-top:0.5px solid var(--border);padding:7px 10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
 .ctrl-btn{background:var(--card);border:0.5px solid var(--border);color:var(--txt);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;flex-shrink:0}
-.ctrl-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,194,255,.08)}
+.ctrl-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(123,51,255,.08)}
 .ctrl-btn:active{transform:scale(.92)}
-.play-btn{background:var(--accent);border-color:var(--accent);color:#000;width:38px;height:38px;border-radius:50%;font-size:15px}
-.play-btn:hover{background:#00deff;color:#000}
-.play-btn.playing{background:var(--accent2);border-color:var(--accent2)}
-.loop-btn.on{background:rgba(0,194,255,.15);border-color:var(--accent);color:var(--accent)}
+.ctrl-btn:disabled{opacity:.3;cursor:not-allowed}
+.play-btn{background:#330080;border-color:#330080;color:#fff;width:38px;height:38px;border-radius:50%;font-size:15px}
+.play-btn:hover{background:#5511aa;color:#fff}
+.play-btn.playing{background:var(--accent);border-color:var(--accent);color:#fff}
+.loop-btn.on{background:rgba(123,51,255,.15);border-color:var(--accent);color:var(--accent)}
 .ctrl-div{width:0.5px;height:26px;background:var(--border);flex-shrink:0}
 .time-disp{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent);min-width:48px;text-align:center}
 .prog-bar{width:80px;height:3px;background:var(--border);border-radius:2px;cursor:pointer;flex-shrink:0}
@@ -100,63 +115,56 @@ select option{background:#0d1b2a}
 .modal-btns{display:flex;gap:7px}
 .m-cancel{background:none;border:0.5px solid var(--border);color:var(--muted);padding:7px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;flex:1;transition:all .15s}
 .m-cancel:hover{color:var(--txt);border-color:var(--muted)}
-.m-ok{background:var(--accent);border:none;color:#000;padding:7px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;flex:2}
-.m-ok:hover{background:#00deff}
+.m-ok{background:#330080;border:none;color:#fff;padding:7px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;flex:2}
+.m-ok:hover{background:#5511aa}
 .errmsg{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--danger);text-align:center;min-height:13px}
 .foot{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);text-align:center;margin-top:8px;opacity:.4;letter-spacing:1px}
-.sync-bar{background:rgba(0,230,118,.08);border:0.5px solid var(--success);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
-.sync-bar-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--success);letter-spacing:.5px}
+.sync-bar{background:rgba(123,51,255,.1);border:0.5px solid var(--accent);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.sync-bar-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.5px}
 .sync-master-ctrl{display:flex;align-items:center;gap:8px}
+
+/* match-start offset row */
+.offset-row{background:#0a0012;border-top:0.5px solid var(--border);padding:5px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.offset-inp{background:var(--card);border:0.5px solid var(--border);color:var(--accent);width:54px;padding:3px 6px;border-radius:4px;font-family:'Share Tech Mono',monospace;font-size:11px;text-align:center}
+.offset-inp:focus{outline:none;border-color:var(--accent)}
+.offset-btn{width:auto;padding:0 8px;height:28px;font-size:9px;font-family:'Share Tech Mono',monospace;letter-spacing:.5px}
+.offset-mark-btn.set{border-color:var(--warn);color:var(--warn);background:rgba(255,193,7,.1)}
+
+/* compact view */
+.compact-match-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);padding:4px 10px;background:#0a0012;border-bottom:0.5px solid var(--border);letter-spacing:.5px;flex-shrink:0}
 
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 600px) {
-  /* Overall app padding */
-  #app { padding: 10px; border-radius: 0; min-height: 100dvh; }
-  #app::before { border-radius: 0; }
-
-  /* Header: stack logo and buttons */
-  .header { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .hbtns { width: 100%; justify-content: flex-start; }
-  .hbtn { font-size: 9px; padding: 7px 10px; flex: 1; text-align: center; }
-
-  /* Robot panels: full width, fixed reasonable height */
-  .robots-grid { flex-direction: column; gap: 14px; }
-  .robot-panel { width: 100% !important; height: auto !important; min-height: 0; }
-
-  /* Card body: a little more breathing room */
-  .rcard-body { gap: 9px; }
-
-  /* Event/match selects: stack vertically on small screens */
-  .row2 { grid-template-columns: 1fr; gap: 7px; }
-
-  /* Video: taller on mobile so it's actually watchable */
-  .video-wrap { height: 210px; }
-
-  /* Control bar: spread out for fat fingers */
-  .ctrl-bar { gap: 10px; padding: 10px; flex-wrap: nowrap; justify-content: space-around; }
-  .ctrl-btn { width: 38px; height: 38px; font-size: 15px; }
-  .play-btn { width: 46px; height: 46px; font-size: 17px; }
-  .ctrl-lbl { font-size: 7px; }
-  .prog-bar { width: 60px; }
-  .time-disp { font-size: 10px; min-width: 40px; }
-
-  /* Sync bar */
-  .sync-bar { flex-direction: column; align-items: flex-start; gap: 7px; }
-  .sync-master-ctrl { width: 100%; justify-content: center; }
-
-  /* Modal */
-  .modal-ov { align-items: flex-end; padding-bottom: 0; border-radius: 0; }
-  .modal { width: 100%; border-radius: 12px 12px 0 0; padding: 24px 20px 32px; }
-
-  /* Team number bigger for readability */
-  .team-num { font-size: 24px; }
-
-  /* Setup card */
-  .setup-card { padding: 14px; }
-  .key-row { flex-direction: column; }
-  .key-btn { width: 100%; padding: 10px; font-size: 15px; }
-  .key-inp { font-size: 13px; padding: 10px; }
-  .step-txt { font-size: 12px; }
+  #app{padding:10px;border-radius:0;min-height:100dvh}
+  #app::before{border-radius:0}
+  .header{flex-direction:column;align-items:flex-start;gap:10px}
+  .hbtns{width:100%;justify-content:flex-start}
+  .hbtn{font-size:9px;padding:7px 10px;flex:1;text-align:center}
+  .robots-grid{flex-direction:column;gap:14px}
+  .robot-panel{width:100%!important;height:auto!important;min-height:0}
+  .rcard-body{gap:9px}
+  .row2{grid-template-columns:1fr;gap:7px}
+  .video-wrap{height:210px}
+  .video-wrap.compact-video{height:240px}
+  .ctrl-bar{gap:10px;padding:10px;flex-wrap:nowrap;justify-content:space-around}
+  .ctrl-btn{width:38px;height:38px;font-size:15px}
+  .play-btn{width:46px;height:46px;font-size:17px}
+  .ctrl-lbl{font-size:7px}
+  .prog-bar{width:60px}
+  .time-disp{font-size:10px;min-width:40px}
+  .sync-bar{flex-direction:column;align-items:flex-start;gap:7px}
+  .sync-master-ctrl{width:100%;justify-content:center}
+  .alliance-bar{gap:6px}
+  .alliance-evt-inp{width:100%}
+  .alliance-sel{width:100%}
+  .modal-ov{align-items:flex-end;padding-bottom:0;border-radius:0}
+  .modal{width:100%;border-radius:12px 12px 0 0;padding:24px 20px 32px}
+  .team-num{font-size:24px}
+  .setup-card{padding:14px}
+  .key-row{flex-direction:column}
+  .key-btn{width:100%;padding:10px;font-size:15px}
+  .key-inp{font-size:13px;padding:10px}
+  .step-txt{font-size:12px}
 }
 </style>
 
@@ -171,6 +179,8 @@ select option{background:#0d1b2a}
     </div>
     <div class="hbtns">
       <button class="hbtn" id="changeKeyBtn" style="display:none" onclick="showSetup()">&#9998; API KEY</button>
+      <button class="hbtn" id="allianceBtn" style="display:none" onclick="toggleAllianceBar()">&#9889; ALLIANCE</button>
+      <button class="hbtn" id="compactBtn" style="display:none" onclick="toggleCompact()">&#9633; COMPACT</button>
       <button class="hbtn" id="syncBtn" style="display:none" onclick="toggleSync()">&#9654;&#9654; SYNC VIDEOS</button>
       <button class="hbtn accent" id="addBtn" style="display:none" onclick="openModal()">+ ADD ROBOT</button>
     </div>
@@ -193,6 +203,19 @@ select option{background:#0d1b2a}
   </div>
 
   <div id="mainScreen" style="display:none;flex-direction:column">
+    <div id="allianceBar" class="alliance-bar" style="display:none">
+      <span class="alliance-lbl">EVENT</span>
+      <input class="alliance-evt-inp" id="allianceEventInp" placeholder="e.g. 2025cmptx" onkeydown="if(event.key==='Enter')fetchAllianceMatches()"/>
+      <button class="hbtn" id="allianceFetchBtn" onclick="fetchAllianceMatches()">FETCH</button>
+      <select class="alliance-sel" id="allianceMatchSel" disabled onchange="allianceFillBtn.disabled=!this.value">
+        <option value="">-- Match --</option>
+      </select>
+      <label class="alliance-radio red-opt"><input type="radio" name="alliance" value="red" checked> RED</label>
+      <label class="alliance-radio blue-opt"><input type="radio" name="alliance" value="blue"> BLUE</label>
+      <button class="hbtn accent" id="allianceFillBtn" onclick="fillAlliance()" disabled>FILL</button>
+      <span class="alliance-status" id="allianceStatus"></span>
+    </div>
+
     <div id="syncBar" style="display:none" class="sync-bar">
       <div class="sync-bar-txt">&#9679; SYNC MODE — all panels share playback</div>
       <div class="sync-master-ctrl">
@@ -203,16 +226,17 @@ select option{background:#0d1b2a}
         <div class="time-disp" id="syncTime">0:00</div>
       </div>
     </div>
+
     <div class="robots-grid" id="robotsGrid">
       <div class="empty" id="emptyState">
         <div class="empty-icon">🤖</div>
         <div class="empty-t">NO ROBOTS ADDED</div>
-        <div class="empty-s">Add up to 3 robots. Drag the corner to resize panels. Use SYNC VIDEOS to control all at once.</div>
+        <div class="empty-s">Use ⚡ ALLIANCE to auto-fill from a match, or + ADD ROBOT to add teams manually. SYNC VIDEOS controls all panels at once.</div>
       </div>
     </div>
   </div>
 
-  <div class="foot" id="foot" style="display:none">DATA: THE BLUE ALLIANCE · VIDEOS: FIRST 40s</div>
+  <div class="foot" id="foot" style="display:none">DATA: THE BLUE ALLIANCE · VIDEOS: FIRST 40s · OFFSETS: SHARED VIA FIRESTORE</div>
 
   <div class="modal-ov" id="modalOv" style="display:none">
     <div class="modal">
@@ -227,11 +251,27 @@ select option{background:#0d1b2a}
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 const MAX_ROBOTS = 3, MAX_CLIP = 40, FRAME_SEC = 5/30;
 const BASE = 'https://www.thebluealliance.com/api/v3';
-let TBA_KEY = '', robots = [], uid = 0, syncMode = false, syncPlaying = false, syncT = 0, syncLastTs = null, syncRafId = null;
+let TBA_KEY = '', robots = [], uid = 0;
+let syncMode = false, syncPlaying = false, syncT = 0, syncLastTs = null, syncRafId = null;
+let compactMode = false;
+let allianceEventKey = '', allianceMatchList = [];
 
+firebase.initializeApp({
+  apiKey: "AIzaSyDGoE5Bs32zQRaRAD9mbX_u9r1fTN3-eK0",
+  authDomain: "autotrack-ae430.firebaseapp.com",
+  projectId: "autotrack-ae430",
+  storageBucket: "autotrack-ae430.firebasestorage.app",
+  messagingSenderId: "736491351752",
+  appId: "1:736491351752:web:47d334824478aaba46bffd"
+});
+const db = firebase.firestore();
+
+// ── TBA API ──────────────────────────────────────────────────────────
 const tba = async path => {
   const url = `${BASE}${path}${path.includes('?')?'&':'?'}X-TBA-Auth-Key=${encodeURIComponent(TBA_KEY)}`;
   const r = await fetch(url);
@@ -239,6 +279,7 @@ const tba = async path => {
   return r.json();
 };
 
+// ── AUTH / SETUP ─────────────────────────────────────────────────────
 async function submitKey() {
   const key = document.getElementById('keyInp').value.trim();
   const st = document.getElementById('keyStatus');
@@ -259,18 +300,17 @@ document.getElementById('keyInp').addEventListener('keydown', e => { if(e.key===
 function enterApp() {
   document.getElementById('setupScreen').style.display = 'none';
   const ms = document.getElementById('mainScreen'); ms.style.display='flex';
-  document.getElementById('addBtn').style.display='block';
-  document.getElementById('changeKeyBtn').style.display='block';
-  document.getElementById('syncBtn').style.display='block';
+  ['addBtn','changeKeyBtn','syncBtn','allianceBtn','compactBtn'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('foot').style.display='block';
 }
 function showSetup() {
   document.getElementById('mainScreen').style.display='none';
   document.getElementById('setupScreen').style.display='flex';
-  ['addBtn','changeKeyBtn','syncBtn','foot'].forEach(id=>document.getElementById(id).style.display='none');
+  ['addBtn','changeKeyBtn','syncBtn','allianceBtn','compactBtn','foot'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('keyStatus').textContent='';
 }
 
+// ── MODAL ────────────────────────────────────────────────────────────
 function openModal() {
   if(robots.length>=MAX_ROBOTS) return;
   document.getElementById('modalOv').style.display='flex';
@@ -288,23 +328,33 @@ async function confirmAdd() {
   if (!val||isNaN(val)||+val<1) { errEl.textContent='Enter a valid team number.'; return; }
   if (robots.find(r=>r.team===val)) { errEl.textContent='Already added.'; return; }
   errEl.textContent='';
-  const id = ++uid;
-  robots.push({id,team:val,events:[],matches:[],selEvent:'',selMatch:'',videoKey:null,loaded:false,loadingEvents:true,loadingMatches:false,error:'',playing:false,looping:false,t:0,lastTs:null,rafId:null,player:null,playerReady:false,playerKey:null});
   closeModal();
+  const id = pushRobot(val);
   renderAll();
   await loadEvents(id);
 }
 
+function pushRobot(team) {
+  const id = ++uid;
+  robots.push({id,team,events:[],matches:[],selEvent:'',selMatch:'',videoKey:null,loaded:false,
+    loadingEvents:true,loadingMatches:false,error:'',playing:false,looping:false,
+    t:0,lastTs:null,rafId:null,autoStart:0,offsetUnsub:null,player:null,playerReady:false,playerKey:null});
+  return id;
+}
+
 function removeRobot(id) {
-  const r=get(id); if(r?.rafId) cancelAnimationFrame(r.rafId);
+  const r=get(id);
+  if(r?.rafId) cancelAnimationFrame(r.rafId);
+  unsubscribeOffset(r);
   destroyPlayer(r);
   robots=robots.filter(x=>x.id!==id);
-  if(syncMode && robots.length===0) { syncMode=false; updateSyncBtn(); }
+  if(syncMode && robots.length===0){syncMode=false;updateSyncBtn();}
   renderAll();
 }
 
 const get = id => robots.find(r=>r.id===id);
 
+// ── TBA LOADERS ──────────────────────────────────────────────────────
 async function loadEvents(id) {
   const r=get(id); if(!r) return;
   r.loadingEvents=true; r.error=''; patchStatus(id);
@@ -326,13 +376,7 @@ async function loadMatches(id) {
   try {
     const data = await tba(`/team/frc${r.team}/event/${r.selEvent}/matches/simple`);
     if(!Array.isArray(data)) throw new Error('bad');
-    const ord={qm:0,ef:1,qf:2,sf:3,f:4};
-    r.matches=data.sort((a,b)=>{
-      const d=(ord[a.comp_level]??9)-(ord[b.comp_level]??9);
-      if(d!==0) return d;
-      if(a.set_number!==b.set_number) return a.set_number-b.set_number;
-      return a.match_number-b.match_number;
-    });
+    r.matches=data.sort(matchSort);
     r.loadingMatches=false; updateCard(id);
   } catch(e) { r.loadingMatches=false; updateCard(id); }
 }
@@ -347,17 +391,28 @@ async function loadVideo(id) {
   } catch(e) { r.loaded=true; updateCard(id); }
 }
 
+const matchSort = (a,b) => {
+  const ord={qm:0,ef:1,qf:2,sf:3,f:4};
+  const d=(ord[a.comp_level]??9)-(ord[b.comp_level]??9);
+  if(d!==0) return d;
+  if(a.set_number!==b.set_number) return a.set_number-b.set_number;
+  return a.match_number-b.match_number;
+};
+
 function onEventChange(id,val) {
   const r=get(id); if(!r) return;
-  r.selEvent=val; r.selMatch=''; r.matches=[]; r.videoKey=null; r.loaded=false;
+  unsubscribeOffset(r);
+  r.selEvent=val; r.selMatch=''; r.matches=[]; r.videoKey=null; r.loaded=false; r.autoStart=0;
   updateCard(id); if(val) loadMatches(id);
 }
 function onMatchChange(id,val) {
   const r=get(id); if(!r) return;
   if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}
   destroyPlayer(r);
-  r.playing=false; r.t=0; r.selMatch=val; r.videoKey=null; r.loaded=false;
-  updateCard(id); if(val) loadVideo(id);
+  unsubscribeOffset(r);
+  r.playing=false; r.t=0; r.selMatch=val; r.videoKey=null; r.loaded=false; r.autoStart=0;
+  updateCard(id);
+  if(val){ subscribeOffset(id); loadVideo(id); }
 }
 
 function mLabel(m) {
@@ -366,6 +421,167 @@ function mLabel(m) {
   return m.comp_level==='qm'?`${l} ${m.match_number}`:`${l} ${m.set_number}-${m.match_number}`;
 }
 
+// ── FIRESTORE OFFSET PERSISTENCE ─────────────────────────────────────
+function subscribeOffset(id) {
+  const r=get(id); if(!r||!r.selMatch) return;
+  if(r.offsetUnsub){r.offsetUnsub();r.offsetUnsub=null;}
+  r.offsetUnsub = db.collection('offsets').doc(r.selMatch).onSnapshot(
+    snap => {
+      const ro=get(id); if(!ro) return;
+      ro.autoStart = snap.exists ? (snap.data().t||0) : 0;
+      updateOffsetRow(id);
+    },
+    () => {} // silently ignore permission errors
+  );
+}
+
+function unsubscribeOffset(r) {
+  if(r?.offsetUnsub){r.offsetUnsub();r.offsetUnsub=null;}
+}
+
+async function saveOffset(matchKey, val) {
+  try {
+    if(val>0){
+      await db.collection('offsets').doc(matchKey).set({t:val,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    } else {
+      await db.collection('offsets').doc(matchKey).delete();
+    }
+  } catch(e){}
+}
+
+function markStart(id) {
+  const r=get(id); if(!r) return;
+  r.autoStart = syncMode ? syncT : r.t;
+  if(r.selMatch) saveOffset(r.selMatch, r.autoStart);
+  updateOffsetRow(id);
+}
+
+function clearStart(id) {
+  const r=get(id); if(!r) return;
+  r.autoStart=0;
+  if(r.selMatch) saveOffset(r.selMatch, 0);
+  updateOffsetRow(id);
+}
+
+function setStartOffset(id, val) {
+  const r=get(id); if(!r) return;
+  r.autoStart=Math.max(0, parseFloat(val)||0);
+  if(r.selMatch) saveOffset(r.selMatch, r.autoStart);
+}
+
+function updateOffsetRow(id) {
+  const r=get(id); if(!r) return;
+  const inp=document.getElementById(`oi-${id}`);
+  const markBtn=document.querySelector(`[data-mark-id="${id}"]`);
+  const clrBtn=markBtn?.nextElementSibling;
+  if(inp) inp.value=r.autoStart.toFixed(1);
+  if(markBtn) markBtn.className='ctrl-btn offset-btn offset-mark-btn'+(r.autoStart>0?' set':'');
+  if(clrBtn) clrBtn.disabled=r.autoStart===0;
+}
+
+// ── ALLIANCE QUICK-ADD ───────────────────────────────────────────────
+function toggleAllianceBar() {
+  const bar=document.getElementById('allianceBar');
+  const btn=document.getElementById('allianceBtn');
+  const visible=bar.style.display!=='none';
+  bar.style.display=visible?'none':'flex';
+  btn.className=visible?'hbtn':'hbtn active';
+}
+
+async function fetchAllianceMatches() {
+  const key=document.getElementById('allianceEventInp').value.trim();
+  if(!key) return;
+  allianceEventKey=key;
+  const fetchBtn=document.getElementById('allianceFetchBtn');
+  const sel=document.getElementById('allianceMatchSel');
+  const st=document.getElementById('allianceStatus');
+  fetchBtn.textContent='...'; fetchBtn.disabled=true;
+  st.textContent='// Loading...';
+  try {
+    const data=await tba(`/event/${key}/matches/simple`);
+    allianceMatchList=data.sort(matchSort);
+    sel.innerHTML='<option value="">-- Select Match --</option>'+
+      allianceMatchList.map(m=>`<option value="${m.key}">${mLabel(m)}</option>`).join('');
+    sel.disabled=false;
+    st.textContent=`${allianceMatchList.length} matches`;
+  } catch(e) {
+    sel.innerHTML='<option value="">Error loading</option>';
+    st.textContent='✗ '+e.message;
+  }
+  fetchBtn.textContent='FETCH'; fetchBtn.disabled=false;
+}
+
+async function fillAlliance() {
+  const matchKey=document.getElementById('allianceMatchSel').value;
+  const alliance=document.querySelector('input[name="alliance"]:checked')?.value||'red';
+  if(!matchKey) return;
+  const fillBtn=document.getElementById('allianceFillBtn');
+  const st=document.getElementById('allianceStatus');
+  fillBtn.textContent='...'; fillBtn.disabled=true;
+  st.textContent='// Loading...';
+  try {
+    const matchData=await tba(`/match/${matchKey}`);
+    const teamKeys=matchData.alliances?.[alliance]?.team_keys||[];
+    const teams=teamKeys.map(k=>k.replace('frc','')).slice(0,3);
+    if(teams.length===0){st.textContent='No teams found';return;}
+
+    // Clear existing robots then add alliance teams
+    [...robots].forEach(r=>removeRobot(r.id));
+    const ids=[];
+    for(const t of teams){
+      if(robots.length>=MAX_ROBOTS) break;
+      ids.push(pushRobot(t));
+    }
+    renderAll();
+
+    st.textContent=`Filling ${teams.join(', ')}...`;
+    await Promise.all(ids.map((id,i)=>loadEventsAndAutoSelect(id, allianceEventKey)));
+    st.textContent=`✓ ${alliance.toUpperCase()} alliance loaded`;
+  } catch(e) {
+    st.textContent='✗ '+e.message;
+  }
+  fillBtn.textContent='FILL'; fillBtn.disabled=false;
+}
+
+async function loadEventsAndAutoSelect(id, eventKey) {
+  const r=get(id); if(!r) return;
+  try {
+    const yr=new Date().getFullYear();
+    const evData=await tba(`/team/frc${r.team}/events/${yr}/simple`);
+    r.events=evData.sort((a,b)=>(a.start_date||'').localeCompare(b.start_date||''));
+    r.loadingEvents=false;
+    const evMatch=r.events.find(e=>e.key===eventKey);
+    if(evMatch){
+      r.selEvent=eventKey;
+      const mData=await tba(`/team/frc${r.team}/event/${eventKey}/matches/simple`);
+      r.matches=(Array.isArray(mData)?mData:[]).sort(matchSort);
+      r.loadingMatches=false;
+    } else {
+      r.error=`Team ${r.team} not at event ${eventKey}`;
+    }
+    updateCard(id);
+  } catch(e) {
+    const ro=get(id); if(!ro) return;
+    ro.loadingEvents=false; ro.error='Fetch failed: '+e.message; updateCard(id);
+  }
+}
+
+// ── COMPACT MODE ──────────────────────────────────────────────────────
+function toggleCompact() {
+  compactMode=!compactMode;
+  const btn=document.getElementById('compactBtn');
+  btn.className=compactMode?'hbtn active':'hbtn';
+  btn.textContent=compactMode?'⊞ FULL VIEW':'⊡ COMPACT';
+  const grid=document.getElementById('robotsGrid');
+  grid.className=compactMode?'robots-grid compact':'robots-grid';
+  robots.forEach(r=>{
+    const panel=document.querySelector(`[data-rid="${r.id}"]`);
+    if(panel) panel.style.cssText=compactMode?'width:100%;height:auto;flex-shrink:0;min-height:0':'width:320px;height:380px;flex-shrink:0';
+    updateCard(r.id);
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────
 function renderAll() {
   const grid=document.getElementById('robotsGrid');
   const empty=document.getElementById('emptyState');
@@ -381,7 +597,7 @@ function renderAll() {
 function mkPanel(r) {
   const d=document.createElement('div');
   d.className='robot-panel'; d.dataset.rid=r.id;
-  d.style.cssText='width:320px;height:380px;flex-shrink:0';
+  d.style.cssText=compactMode?'width:100%;height:auto;flex-shrink:0;min-height:0':'width:320px;height:380px;flex-shrink:0';
   d.innerHTML=`
     <div class="rcard-head">
       <div style="display:flex;align-items:center;gap:8px">
@@ -392,14 +608,14 @@ function mkPanel(r) {
     </div>
     <div class="rcard-body" id="body-${r.id}"></div>
     <div class="resize-handle" data-rid="${r.id}"></div>`;
-  initResize(d);
+  if(!compactMode) initResize(d);
   return d;
 }
 
 function initResize(panel) {
-  const handle = panel.querySelector('.resize-handle');
+  const handle=panel.querySelector('.resize-handle');
   let startX,startY,startW,startH;
-  handle.addEventListener('mousedown', e=>{
+  handle.addEventListener('mousedown',e=>{
     e.preventDefault();
     startX=e.clientX; startY=e.clientY;
     startW=panel.offsetWidth; startH=panel.offsetHeight;
@@ -407,7 +623,7 @@ function initResize(panel) {
       panel.style.width=Math.max(220,startW+(ev.clientX-startX))+'px';
       panel.style.height=Math.max(280,startH+(ev.clientY-startY))+'px';
     };
-    const onUp=()=>{ document.removeEventListener('mousemove',onMove); document.removeEventListener('mouseup',onUp); };
+    const onUp=()=>{document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);};
     document.addEventListener('mousemove',onMove);
     document.addEventListener('mouseup',onUp);
   });
@@ -433,14 +649,39 @@ function updateCard(id) {
   if(r.loadingEvents){body.innerHTML=`<div class="loading-txt">// CONTACTING TBA...</div>`;return;}
   if(r.error){body.innerHTML=`<div class="err-txt">&#9888; ${r.error}</div>`;return;}
 
+  // ── COMPACT MODE RENDERING ──
+  if(compactMode){
+    body.className='rcard-body compact-body';
+    const matchObj=r.matches.find(m=>m.key===r.selMatch);
+    const lbl=matchObj?mLabel(matchObj):(r.selMatch||'No match selected');
+    const t=syncMode?syncT:r.t;
+    const isPlaying=syncMode?syncPlaying:r.playing;
+    const pct=Math.min((t/MAX_CLIP)*100,100).toFixed(1);
+    body.innerHTML=`
+      <div class="compact-match-lbl">${lbl}${r.autoStart>0?` &nbsp;·&nbsp; T₀ ${r.autoStart.toFixed(1)}s`:''}</div>
+      <div class="video-wrap compact-video" id="vwrap-${id}"></div>
+      ${!syncMode&&r.videoKey?`
+      <div class="ctrl-bar" style="gap:10px">
+        <button class="ctrl-btn" onclick="seek(${id},-1)" style="width:38px;height:38px;font-size:15px">&#9664;&#9664;</button>
+        <button class="ctrl-btn play-btn${isPlaying?' playing':''}" onclick="togglePlay(${id})" style="width:46px;height:46px;font-size:17px">${isPlaying?'&#9646;&#9646;':'&#9654;'}</button>
+        <button class="ctrl-btn" onclick="seek(${id},1)" style="width:38px;height:38px;font-size:15px">&#9654;&#9654;</button>
+        <div class="ctrl-div"></div>
+        <div class="time-disp" id="td-${id}">0:${String(Math.floor(t)).padStart(2,'0')}</div>
+        <div class="prog-bar" onclick="scrub(event,${id})" style="flex:1;width:auto"><div class="prog-fill" id="pf-${id}" style="width:${pct}%"></div></div>
+      </div>`:''}`;
+    populateVideoWrap(r, id);
+    return;
+  }
+
+  // ── NORMAL MODE RENDERING ──
+  body.className='rcard-body';
   const evOpts=r.events.map(e=>`<option value="${e.key}"${r.selEvent===e.key?' selected':''}>${e.short_name||e.name}</option>`).join('');
   const mOpts=r.matches.map(m=>`<option value="${m.key}"${r.selMatch===m.key?' selected':''}>${mLabel(m)}</option>`).join('');
-
-  const t = syncMode ? syncT : r.t;
+  const t=syncMode?syncT:r.t;
   const s=Math.floor(t), pct=Math.min((t/MAX_CLIP)*100,100).toFixed(1);
-  const isPlaying = syncMode ? syncPlaying : r.playing;
+  const isPlaying=syncMode?syncPlaying:r.playing;
 
-  const ctrlBar = syncMode ? '' : `
+  const ctrlBar=syncMode?'':`
     <div class="ctrl-bar">
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
         <div class="ctrl-lbl">-5F</div>
@@ -466,7 +707,14 @@ function updateCard(id) {
       </div>
     </div>`;
 
-  // Build static HTML first (no iframe yet)
+  const offsetRow=(r.loaded&&r.videoKey)?`
+    <div class="offset-row">
+      <span class="ctrl-lbl">AUTO START</span>
+      <input type="number" class="offset-inp" id="oi-${id}" value="${r.autoStart.toFixed(1)}" min="0" step="0.5" onchange="setStartOffset(${id},this.value)">
+      <button class="ctrl-btn offset-btn offset-mark-btn${r.autoStart>0?' set':''}" data-mark-id="${id}" onclick="markStart(${id})" title="Mark current position as match start">MARK</button>
+      <button class="ctrl-btn offset-btn" onclick="clearStart(${id})"${r.autoStart===0?' disabled':''} title="Clear match start offset">CLR</button>
+    </div>`:'';
+
   body.innerHTML=`
     <div class="row2">
       <div><div class="field-lbl">Event</div>
@@ -479,37 +727,40 @@ function updateCard(id) {
         </select></div>
     </div>
     <div class="video-wrap" id="vwrap-${id}"></div>
-    ${ctrlBar}`;
+    ${ctrlBar}
+    ${offsetRow}`;
 
-  // Now populate the video wrap as a real DOM element
-  const wrap = document.getElementById(`vwrap-${id}`);
-  if (!r.selMatch) {
+  populateVideoWrap(r, id);
+}
+
+function populateVideoWrap(r, id) {
+  const wrap=document.getElementById(`vwrap-${id}`);
+  if(!wrap) return;
+  if(!r.selMatch){
     wrap.innerHTML=`<div class="vid-ph"><div style="font-size:18px;opacity:.3">&#9654;</div><span>Select event &amp; match</span></div>`;
-  } else if (!r.loaded) {
+  } else if(!r.loaded){
     wrap.innerHTML=`<div class="vid-ph"><div class="loading-txt">// LOADING...</div></div>`;
-  } else if (!r.videoKey) {
+  } else if(!r.videoKey){
     wrap.innerHTML=`<div class="vid-ph" style="color:#ff6b6b">&#9888; No video on TBA for this match</div>`;
   } else {
-    const origin = location.origin;
-    const iframe = document.createElement('iframe');
-    iframe.id = `yt-iframe-${id}`;
-    iframe.width = '100%';
-    iframe.height = '100%';
-    iframe.src = `https://www.youtube.com/embed/${r.videoKey}?controls=1&rel=0&playsinline=1&enablejsapi=1&origin=${encodeURIComponent(origin)}`;
-    iframe.title = 'YouTube video player';
-    iframe.frameBorder = '0';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-    iframe.setAttribute('allowfullscreen', '');
-    iframe.style.cssText = 'width:100%;height:100%;border:none;display:block;border-radius:6px';
+    const iframe=document.createElement('iframe');
+    iframe.id=`yt-iframe-${id}`;
+    iframe.src=`https://www.youtube.com/embed/${r.videoKey}?controls=1&rel=0&playsinline=1&enablejsapi=1`;
+    iframe.title='YouTube video player';
+    iframe.frameBorder='0';
+    iframe.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+    iframe.setAttribute('allowfullscreen','');
+    iframe.style.cssText='width:100%;height:100%;border:none;display:block;border-radius:6px';
     wrap.appendChild(iframe);
   }
 }
 
+// ── YOUTUBE CONTROL ───────────────────────────────────────────────────
 function ytCmd(id, func, args){
-  const iframe = document.getElementById(`yt-iframe-${id}`);
+  const iframe=document.getElementById(`yt-iframe-${id}`);
   if(!iframe) return;
-  iframe.contentWindow.postMessage(JSON.stringify({event:'command', func, args: args||[]}), 'https://www.youtube.com');
+  iframe.contentWindow.postMessage(JSON.stringify({event:'command',func,args:args||[]}),'https://www.youtube.com');
 }
 
 function togglePlay(id){const r=get(id);if(!r||!r.videoKey)return;r.playing?pauseR(id):playR(id);}
@@ -525,8 +776,8 @@ function playR(id){
     ro.lastTs=ts;
     updateProg(id);
     if(ro.t>=MAX_CLIP){
-      if(ro.looping){ ro.t=0; ytCmd(id,'seekTo',[0,true]); }
-      else{ pauseR(id);return; }
+      if(ro.looping){ro.t=0;ytCmd(id,'seekTo',[ro.autoStart,true]);}
+      else{pauseR(id);return;}
     }
     ro.rafId=requestAnimationFrame(tick);
   };
@@ -543,7 +794,7 @@ function pauseR(id){
 function seek(id,dir){
   const r=get(id);if(!r)return;
   r.t=Math.max(0,Math.min(MAX_CLIP,r.t+dir*FRAME_SEC));
-  ytCmd(id,'seekTo',[r.t,true]);
+  ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
 
@@ -551,7 +802,7 @@ function scrub(e,id){
   const r=get(id);if(!r)return;
   const rect=e.currentTarget.getBoundingClientRect();
   r.t=Math.max(0,Math.min(MAX_CLIP,(e.clientX-rect.left)/rect.width*MAX_CLIP));
-  ytCmd(id,'seekTo',[r.t,true]);
+  ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
 
@@ -560,25 +811,23 @@ function toggleLoop(id){const r=get(id);if(!r)return;r.looping=!r.looping;refres
 function updateProg(id){
   const r=get(id);if(!r)return;
   const pf=document.getElementById(`pf-${id}`);const td=document.getElementById(`td-${id}`);
-  if(pf)pf.style.width=Math.min((r.t/MAX_CLIP)*100,100).toFixed(1)+'%';
-  if(td)td.textContent=`0:${String(Math.floor(r.t)).padStart(2,'0')} / 0:40`;
+  if(pf) pf.style.width=Math.min((r.t/MAX_CLIP)*100,100).toFixed(1)+'%';
+  if(td) td.textContent=compactMode?`0:${String(Math.floor(r.t)).padStart(2,'0')}`:`0:${String(Math.floor(r.t)).padStart(2,'0')} / 0:40`;
 }
 
 function refreshCtrl(id){
   const r=get(id);const body=document.getElementById(`body-${id}`);if(!r||!body)return;
   const pb=body.querySelector('.play-btn');const lb=body.querySelector('.loop-btn');const lbls=body.querySelectorAll('.ctrl-lbl');
   if(pb){pb.className='ctrl-btn play-btn'+(r.playing?' playing':'');pb.innerHTML=r.playing?'&#9646;&#9646;':'&#9654;';}
-  if(lb)lb.className='ctrl-btn loop-btn'+(r.looping?' on':'');
-  if(lbls[1])lbls[1].textContent=r.playing?'PAUSE':'PLAY';
+  if(lb) lb.className='ctrl-btn loop-btn'+(r.looping?' on':'');
+  if(lbls[1]) lbls[1].textContent=r.playing?'PAUSE':'PLAY';
 }
 
 function destroyPlayer(r){
-  // iframe is removed with the DOM; nothing extra to clean up
-  if(r){ r.playerReady=false; r.playerKey=null; }
+  if(r){r.playerReady=false;r.playerKey=null;}
 }
 
-
-// SYNC MODE
+// ── SYNC MODE ─────────────────────────────────────────────────────────
 function toggleSync(){
   syncMode=!syncMode;
   if(syncMode){syncT=0;syncPlaying=false;if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}}
@@ -600,7 +849,7 @@ function syncTogglePlay(){syncPlaying?syncPause():syncPlay();}
 function syncPlay(){
   syncPlaying=true;
   syncLastTs=performance.now();
-  robots.forEach(r=>{ r.t=syncT; ytCmd(r.id,'seekTo',[syncT,true]); ytCmd(r.id,'playVideo'); });
+  robots.forEach(r=>{r.t=syncT;ytCmd(r.id,'seekTo',[r.autoStart+syncT,true]);ytCmd(r.id,'playVideo');});
   const spb=document.getElementById('syncPlayBtn');
   if(spb){spb.className='ctrl-btn play-btn playing';spb.innerHTML='&#9646;&#9646;';}
   const tick=ts=>{
@@ -608,7 +857,7 @@ function syncPlay(){
     syncT=Math.min(syncT+(ts-syncLastTs)/1000,MAX_CLIP);
     syncLastTs=ts;
     updateSyncTime();
-    robots.forEach(r=>{ r.t=syncT; updateProg(r.id); });
+    robots.forEach(r=>{r.t=syncT;updateProg(r.id);});
     if(syncT>=MAX_CLIP){syncPause();return;}
     syncRafId=requestAnimationFrame(tick);
   };
@@ -624,12 +873,12 @@ function syncPause(){
 
 function syncSeek(dir){
   syncT=Math.max(0,Math.min(MAX_CLIP,syncT+dir*FRAME_SEC));
-  robots.forEach(r=>{ r.t=syncT; ytCmd(r.id,'seekTo',[syncT,true]); updateProg(r.id); });
+  robots.forEach(r=>{r.t=syncT;ytCmd(r.id,'seekTo',[r.autoStart+syncT,true]);updateProg(r.id);});
   updateSyncTime();
 }
 
 function updateSyncTime(){
   const el=document.getElementById('syncTime');
-  if(el)el.textContent=`0:${String(Math.floor(syncT)).padStart(2,'0')}`;
+  if(el) el.textContent=`0:${String(Math.floor(syncT)).padStart(2,'0')}`;
 }
 </script>
