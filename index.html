@@ -269,8 +269,8 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
 
   <div id="mainScreen" style="display:none;flex-direction:column">
     <div class="tab-nav" id="tabNav">
-      <button class="tab-btn active" id="tabScoutBtn" onclick="switchTab('scout')">&#128203; SCOUT</button>
-      <button class="tab-btn" id="tabTrackerBtn" onclick="switchTab('tracker')">&#9654; TRACKER</button>
+      <button class="tab-btn active" id="tabTrackerBtn" onclick="switchTab('tracker')">&#9654; TRACKER</button>
+      <button class="tab-btn" id="tabScoutBtn" onclick="switchTab('scout')">&#128203; SCOUT</button>
     </div>
 
     <!-- SCOUT TAB -->
@@ -438,7 +438,7 @@ function enterApp() {
   ['addBtn','changeKeyBtn','syncBtn','allianceBtn','compactBtn'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('foot').style.display='block';
   // Start on scout tab, hide tracker buttons until tracker tab is selected
-  switchTab('scout');
+  switchTab('tracker');
   subscribeScoutEntries();
 }
 function showSetup() {
@@ -1163,8 +1163,8 @@ function switchTab(tab) {
   document.getElementById('scoutTab').style.flexDirection = 'column';
   document.getElementById('scoutTab').style.gap = '10px';
   document.getElementById('trackerTab').style.display = isScout ? 'none' : 'block';
-  document.getElementById('tabScoutBtn').className = isScout ? 'tab-btn active' : 'tab-btn';
   document.getElementById('tabTrackerBtn').className = isScout ? 'tab-btn' : 'tab-btn active';
+  document.getElementById('tabScoutBtn').className = isScout ? 'tab-btn active' : 'tab-btn';
   // Hide tracker-only header buttons when on scout tab
   ['allianceBtn','compactBtn','syncBtn','addBtn'].forEach(id => {
     const el = document.getElementById(id);
