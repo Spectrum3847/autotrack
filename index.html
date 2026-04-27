@@ -295,6 +295,7 @@ async function submitKey() {
   TBA_KEY = key;
   try {
     await tba('/status');
+    await db.collection('config').doc('settings').set({ tbaKey: key }, { merge: true });
     st.className='key-status ok'; st.textContent='✓ Connected!';
     setTimeout(enterApp, 600);
   } catch(e) {
@@ -303,6 +304,19 @@ async function submitKey() {
   }
 }
 document.getElementById('keyInp').addEventListener('keydown', e => { if(e.key==='Enter') submitKey(); });
+
+async function loadSavedKey() {
+  try {
+    const doc = await db.collection('config').doc('settings').get();
+    if (!doc.exists || !doc.data().tbaKey) return;
+    TBA_KEY = doc.data().tbaKey;
+    await tba('/status');
+    enterApp();
+  } catch(e) {
+    TBA_KEY = '';
+  }
+}
+loadSavedKey();
 
 function enterApp() {
   document.getElementById('setupScreen').style.display = 'none';
