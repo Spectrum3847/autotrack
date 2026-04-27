@@ -80,7 +80,9 @@ select option{background:#18222d}
 .video-wrap{border-radius:6px;overflow:hidden;border:0.5px solid var(--border);background:#0a0f18;height:190px;position:relative}
 .video-wrap iframe{width:100%;height:100%;border:none;display:block}
 .vid-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--muted);font-size:11px;font-family:'Share Tech Mono',monospace;text-align:center;padding:10px;height:100%}
-.ctrl-bar{background:#101820;border-top:0.5px solid var(--border);padding:7px 10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.ctrl-bar{background:#101820;border-top:0.5px solid var(--border);padding:7px 10px 6px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.ctrl-btns-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.prog-row{display:flex;align-items:center;padding:0 2px}
 .ctrl-btn{background:var(--card);border:0.5px solid var(--border);color:var(--txt);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;flex-shrink:0}
 .ctrl-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(197,180,227,.1)}
 .ctrl-btn:active{transform:scale(.92)}
@@ -91,7 +93,7 @@ select option{background:#18222d}
 .loop-btn.on{background:rgba(197,180,227,.15);border-color:var(--accent);color:var(--accent)}
 .ctrl-div{width:0.5px;height:26px;background:var(--border);flex-shrink:0}
 .time-disp{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--accent);min-width:48px;text-align:center}
-.prog-bar{width:80px;height:3px;background:var(--border);border-radius:2px;cursor:pointer;flex-shrink:0}
+.prog-bar{flex:1;min-width:0;height:3px;background:var(--border);border-radius:2px;cursor:pointer;flex-shrink:0}
 .prog-fill{height:100%;background:var(--accent);border-radius:2px;pointer-events:none;transition:width .05s linear}
 .ctrl-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;text-align:center}
 .status-row{display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted)}
@@ -115,6 +117,66 @@ select option{background:#18222d}
 .m-ok{background:#3c0064;border:none;color:#fff;padding:7px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;flex:2}
 .m-ok:hover{background:#5c1a9e}
 .errmsg{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--danger);text-align:center;min-height:13px}
+
+/* ── TAB NAV ── */
+.tab-nav{display:flex;gap:0;border-bottom:0.5px solid var(--border);margin-bottom:12px}
+.tab-btn{background:none;border:none;color:var(--muted);padding:8px 16px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;border-bottom:2px solid transparent;transition:all .15s;margin-bottom:-0.5px}
+.tab-btn:hover{color:var(--txt)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── SCOUT TAB ── */
+.scout-screen{display:flex;flex-direction:column;gap:14px}
+.scout-team-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.scout-inp{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:7px 10px;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:13px;width:100px;text-align:center}
+.scout-inp:focus{outline:none;border-color:var(--accent)}
+.scout-inp::placeholder{color:var(--muted)}
+.scout-type-btns{display:flex;gap:6px}
+.scout-type-btn{background:var(--panel);border:0.5px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;letter-spacing:.5px}
+.scout-type-btn:hover{border-color:var(--muted);color:var(--txt)}
+.scout-type-btn.sel{background:rgba(197,180,227,.15);border-color:var(--accent);color:var(--accent)}
+.scout-form{background:var(--panel);border:0.5px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.scout-form-title{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:1px}
+.sf-row{display:flex;flex-direction:column;gap:3px}
+.sf-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px}
+.sf-inp{background:var(--bg);border:0.5px solid var(--border);color:var(--txt);padding:7px 9px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:13px;width:100%}
+.sf-inp:focus{outline:none;border-color:var(--accent)}
+.sf-inp::placeholder{color:var(--muted)}
+textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-serif}
+.sf-submit{background:#3c0064;color:#fff;border:none;padding:9px 18px;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;cursor:pointer;align-self:flex-end}
+.sf-submit:hover{background:#5c1a9e}
+.sf-status{font-family:'Share Tech Mono',monospace;font-size:10px;min-height:13px}
+.sf-status.ok{color:var(--success)}.sf-status.err{color:var(--danger)}
+
+/* ── ENTRIES LIST ── */
+.scout-entries{display:flex;flex-direction:column;gap:8px}
+.scout-entries-title{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;padding:4px 0}
+.entry-card{background:var(--panel);border:0.5px solid var(--border);border-radius:8px;overflow:hidden}
+.entry-head{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-bottom:0.5px solid var(--border);background:#101820}
+.entry-team{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--accent);font-weight:700}
+.entry-meta{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.5px}
+.entry-tag{font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 6px;border-radius:3px;letter-spacing:.5px}
+.entry-tag.note{background:rgba(197,180,227,.15);color:var(--accent);border:0.5px solid var(--accent)}
+.entry-tag.video{background:rgba(16,185,129,.12);color:var(--success);border:0.5px solid var(--success)}
+.entry-body{padding:8px 10px;display:flex;flex-direction:column;gap:6px}
+.entry-note-txt{font-size:13px;color:var(--txt);line-height:1.5;cursor:pointer;border-radius:4px;padding:3px 4px;transition:background .15s}
+.entry-note-txt:hover{background:rgba(197,180,227,.08)}
+.entry-note-edit{width:100%;background:var(--bg);border:0.5px solid var(--accent);color:var(--txt);padding:6px 8px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:13px;resize:vertical;min-height:60px}
+.entry-note-edit:focus{outline:none}
+.entry-note-btns{display:flex;gap:6px;justify-content:flex-end}
+.entry-note-save{background:#3c0064;color:#fff;border:none;padding:5px 12px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+.entry-note-save:hover{background:#5c1a9e}
+.entry-note-cancel{background:none;border:0.5px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:5px;font-family:'Rajdhani',sans-serif;font-size:12px;cursor:pointer}
+.entry-note-cancel:hover{color:var(--txt)}
+.entry-del{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:4px;transition:all .15s}
+.entry-del:hover{color:var(--danger);background:rgba(239,68,68,.1)}
+.entry-vid-wrap{border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:#0a0f18}
+.entry-vid-wrap iframe{width:100%;height:100%;border:none;display:block}
+.scout-empty{text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);padding:30px 0;opacity:.6}
+.scout-filter{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.scout-filter-inp{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:5px 9px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:11px;width:90px}
+.scout-filter-inp:focus{outline:none;border-color:var(--accent)}
+.scout-filter-inp::placeholder{color:var(--muted)}
+
 .foot{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);text-align:center;margin-top:8px;opacity:.4;letter-spacing:1px}
 .sync-bar{background:rgba(197,180,227,.07);border:0.5px solid var(--accent);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .sync-bar-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.5px}
@@ -154,7 +216,6 @@ select option{background:#18222d}
   .ctrl-btn{width:38px;height:38px;font-size:15px}
   .play-btn{width:46px;height:46px;font-size:17px}
   .ctrl-lbl{font-size:7px}
-  .prog-bar{width:60px}
   .time-disp{font-size:10px;min-width:40px}
   .sync-bar{flex-direction:column;align-items:flex-start;gap:7px}
   .sync-master-ctrl{width:100%;justify-content:center}
@@ -207,6 +268,70 @@ select option{background:#18222d}
   </div>
 
   <div id="mainScreen" style="display:none;flex-direction:column">
+    <div class="tab-nav" id="tabNav">
+      <button class="tab-btn active" id="tabTrackerBtn" onclick="switchTab('tracker')">&#9654; TRACKER</button>
+      <button class="tab-btn" id="tabScoutBtn" onclick="switchTab('scout')">&#128203; SCOUT</button>
+    </div>
+
+    <!-- SCOUT TAB -->
+    <div id="scoutTab">
+      <div class="scout-team-bar">
+        <input class="scout-inp" id="scoutTeamInp" type="number" placeholder="TEAM #" min="1" max="99999"/>
+        <div class="scout-type-btns">
+          <button class="scout-type-btn sel" id="scoutTypeNote" onclick="setScoutType('note')">&#9998; NOTE</button>
+          <button class="scout-type-btn" id="scoutTypeVideo" onclick="setScoutType('video')">&#9654; VIDEO</button>
+        </div>
+      </div>
+
+      <!-- NOTE FORM -->
+      <div class="scout-form" id="scoutNoteForm">
+        <div class="scout-form-title">// ADD NOTE</div>
+        <div class="sf-row">
+          <div class="sf-lbl">NOTE</div>
+          <textarea class="sf-inp" id="scoutNoteText" placeholder="Observations about this team's autonomous..."></textarea>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+          <div class="sf-status" id="scoutNoteStatus"></div>
+          <button class="sf-submit" onclick="submitNote()">SAVE NOTE</button>
+        </div>
+      </div>
+
+      <!-- VIDEO FORM -->
+      <div class="scout-form" id="scoutVideoForm" style="display:none">
+        <div class="scout-form-title">// ADD CUSTOM VIDEO</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="sf-row">
+            <div class="sf-lbl">EVENT NAME</div>
+            <input class="sf-inp" id="scoutVidEvent" placeholder="e.g. District Week 1"/>
+          </div>
+          <div class="sf-row">
+            <div class="sf-lbl">MATCH</div>
+            <input class="sf-inp" id="scoutVidMatch" placeholder="e.g. Qual 12"/>
+          </div>
+        </div>
+        <div class="sf-row">
+          <div class="sf-lbl">YOUTUBE URL OR VIDEO ID</div>
+          <input class="sf-inp" id="scoutVidUrl" placeholder="https://youtube.com/watch?v=... or video ID"/>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+          <div class="sf-status" id="scoutVidStatus"></div>
+          <button class="sf-submit" onclick="submitVideo()">SAVE VIDEO</button>
+        </div>
+      </div>
+
+      <!-- FILTER + ENTRIES -->
+      <div class="scout-filter">
+        <span class="sf-lbl">FILTER</span>
+        <input class="scout-filter-inp" id="scoutFilterTeam" type="number" placeholder="Team #" oninput="renderEntries()"/>
+        <button class="scout-type-btn" id="filterAll" onclick="setEntryFilter('all')" style="font-size:9px;padding:4px 9px">ALL</button>
+        <button class="scout-type-btn" id="filterNotes" onclick="setEntryFilter('note')" style="font-size:9px;padding:4px 9px">NOTES</button>
+        <button class="scout-type-btn" id="filterVideos" onclick="setEntryFilter('video')" style="font-size:9px;padding:4px 9px">VIDEOS</button>
+      </div>
+      <div class="scout-entries" id="scoutEntries"></div>
+    </div>
+
+    <!-- TRACKER TAB (existing content) -->
+    <div id="trackerTab" style="display:none">
     <div id="allianceBar" class="alliance-bar" style="display:none">
       <span class="alliance-lbl">EVENT</span>
       <input class="alliance-evt-inp" id="allianceEventInp" placeholder="e.g. 2025cmptx" onkeydown="if(event.key==='Enter')fetchAllianceMatches()"/>
@@ -225,10 +350,12 @@ select option{background:#18222d}
       <div class="sync-master-ctrl">
         <button class="ctrl-btn" onclick="syncRestart()" style="width:28px;height:28px;font-size:11px" title="Restart from auto start">&#9632;</button>
         <button class="ctrl-btn" onclick="syncSeek(-1)" style="width:28px;height:28px;font-size:9px" title="-1 second">-1s</button>
-        <button class="ctrl-btn" onclick="syncSeek(-FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="-5 frames">&#9664;&#9664;</button>
+        <button class="ctrl-btn" onclick="syncSeek(-FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="-1/6 second">&#9664;&#9664;</button>
         <button class="ctrl-btn play-btn" id="syncPlayBtn" onclick="syncTogglePlay()" style="width:34px;height:34px;font-size:14px">&#9654;</button>
-        <button class="ctrl-btn" onclick="syncSeek(FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="+5 frames">&#9654;&#9654;</button>
+        <button class="ctrl-btn" onclick="syncSeek(FRAME_SEC)" style="width:28px;height:28px;font-size:11px" title="+1/6 second">&#9654;&#9654;</button>
         <button class="ctrl-btn" onclick="syncSeek(1)" style="width:28px;height:28px;font-size:9px" title="+1 second">+1s</button>
+        <div class="ctrl-div"></div>
+        <button class="ctrl-btn loop-btn" id="syncLoopBtn" onclick="toggleSyncLoop()" title="Loop autonomous period (0 to 21s)">&#8635;</button>
         <div class="ctrl-div"></div>
         <div class="time-disp" id="syncTime">0:00</div>
       </div>
@@ -241,6 +368,7 @@ select option{background:#18222d}
         <div class="empty-s">Use ⚡ ALLIANCE to auto-fill from a match, or + ADD ROBOT to add teams manually. SYNC VIDEOS controls all panels at once.</div>
       </div>
     </div>
+    </div><!-- /trackerTab -->
   </div>
 
   <div class="foot" id="foot" style="display:none">DATA: THE BLUE ALLIANCE · VIDEOS: FIRST 40s · OFFSETS: SHARED VIA FIRESTORE</div>
@@ -261,10 +389,10 @@ select option{background:#18222d}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const MAX_ROBOTS = 3, MAX_CLIP = 40, FRAME_SEC = 5/30;
+const MAX_ROBOTS = 3, MAX_CLIP = 120, FRAME_SEC = 1/6, AUTO_LOOP_DUR = 21;
 const BASE = 'https://www.thebluealliance.com/api/v3';
 let TBA_KEY = '', robots = [], uid = 0;
-let syncMode = false, syncPlaying = false, syncT = 0, syncLastTs = null, syncRafId = null;
+let syncMode = false, syncPlaying = false, syncLooping = false, syncT = 0, syncLastTs = null, syncRafId = null;
 let compactMode = false;
 let allianceEventKey = '', allianceMatchList = [];
 
@@ -323,6 +451,9 @@ function enterApp() {
   const ms = document.getElementById('mainScreen'); ms.style.display='flex';
   ['addBtn','changeKeyBtn','syncBtn','allianceBtn','compactBtn'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('foot').style.display='block';
+  // Start on scout tab, hide tracker buttons until tracker tab is selected
+  switchTab('tracker');
+  subscribeScoutEntries();
 }
 function showSetup() {
   document.getElementById('mainScreen').style.display='none';
@@ -359,7 +490,7 @@ function pushRobot(team) {
   const id = ++uid;
   robots.push({id,team,events:[],matches:[],selEvent:'',selMatch:'',videoKey:null,loaded:false,
     loadingEvents:true,loadingMatches:false,error:'',playing:false,looping:false,
-    t:0,lastTs:null,rafId:null,autoStart:0,offsetUnsub:null,player:null,playerReady:false,playerKey:null});
+    t:0,lastTs:null,rafId:null,autoStart:0,duration:0,offsetUnsub:null,player:null,playerReady:false,playerKey:null});
   return id;
 }
 
@@ -423,17 +554,27 @@ const matchSort = (a,b) => {
 function onEventChange(id,val) {
   const r=get(id); if(!r) return;
   unsubscribeOffset(r);
-  r.selEvent=val; r.selMatch=''; r.matches=[]; r.videoKey=null; r.loaded=false; r.autoStart=0;
-  updateCard(id); if(val) loadMatches(id);
+  r.selEvent=val; r.selMatch=''; r.matches=[]; r.videoKey=null; r.loaded=false; r.autoStart=0; r.duration=0;
+  updateCard(id);
+  // Only fetch TBA matches for real TBA events (not custom-event: prefixed ones)
+  if(val && !val.startsWith('custom-event:')) loadMatches(id);
 }
 function onMatchChange(id,val) {
   const r=get(id); if(!r) return;
   if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}
   destroyPlayer(r);
   unsubscribeOffset(r);
-  r.playing=false; r.t=0; r.selMatch=val; r.videoKey=null; r.loaded=false; r.autoStart=0;
-  updateCard(id);
-  if(val){ subscribeOffset(id); loadVideo(id); }
+  r.playing=false; r.t=0; r.selMatch=val; r.videoKey=null; r.loaded=false; r.autoStart=0; r.duration=0;
+  if(val && val.startsWith('custom:')) {
+    const entryId = val.slice(7);
+    const entry = scoutEntries.find(e=>e.id===entryId);
+    r.videoKey = entry?.ytId || null;
+    r.loaded = true;
+    updateCard(id);
+  } else {
+    updateCard(id);
+    if(val){ subscribeOffset(id); loadVideo(id); }
+  }
 }
 
 function mLabel(m) {
@@ -449,7 +590,17 @@ function subscribeOffset(id) {
   r.offsetUnsub = db.collection('offsets').doc(r.selMatch).onSnapshot(
     snap => {
       const ro=get(id); if(!ro) return;
-      ro.autoStart = snap.exists ? (snap.data().t||0) : 0;
+      const newStart = snap.exists ? (snap.data().t||0) : 0;
+      // Only reset t if we haven't started playing yet (initial load)
+      if(!ro.playing && ro.t===0) {
+        ro.autoStart = newStart;
+      } else {
+        // Adjust t to keep the same absolute position in the video
+        const absPos = ro.autoStart + ro.t;
+        ro.autoStart = newStart;
+        ro.t = Math.max(0, absPos - newStart);
+        updateProg(id);
+      }
       ro.fsError = false;
       updateOffsetRow(id);
     },
@@ -482,8 +633,12 @@ async function saveOffset(matchKey, val) {
 
 async function markStartAndSave(id) {
   const r=get(id); if(!r) return;
-  r.autoStart = syncMode ? syncT : r.t;
+  // Absolute YouTube timestamp = old autoStart + relative t (or syncT in sync mode)
+  const absTime = syncMode ? (r.autoStart + syncT) : (r.autoStart + r.t);
+  r.autoStart = absTime;
+  r.t = 0;
   updateOffsetRow(id);
+  updateProg(id);
   if(!r.selMatch) return;
   const ok = await saveOffset(r.selMatch, r.autoStart);
   const btn=document.querySelector(`[data-mark-id="${id}"]`);
@@ -500,6 +655,8 @@ function markStart(id) { markStartAndSave(id); }
 function clearStart(id) {
   const r=get(id); if(!r) return;
   r.autoStart=0;
+  r.t=0;
+  updateProg(id);
   if(r.selMatch) saveOffset(r.selMatch, 0);
   updateOffsetRow(id);
 }
@@ -507,6 +664,8 @@ function clearStart(id) {
 function setStartOffset(id, val) {
   const r=get(id); if(!r) return;
   r.autoStart=Math.max(0, parseFloat(val)||0);
+  r.t=0;
+  updateProg(id);
   if(r.selMatch) saveOffset(r.selMatch, r.autoStart);
 }
 
@@ -701,40 +860,55 @@ function updateCard(id) {
   body.className='rcard-body';
   const evOpts=r.events.map(e=>`<option value="${e.key}"${r.selEvent===e.key?' selected':''}>${e.short_name||e.name}</option>`).join('');
   const mOpts=r.matches.map(m=>`<option value="${m.key}"${r.selMatch===m.key?' selected':''}>${mLabel(m)}</option>`).join('');
+
+  // Custom video events: one entry per unique event name
+  const vidEntries2 = getTeamEntries(r.team).filter(e=>e.type==='video');
+  const customEventNames = [...new Set(vidEntries2.map(e=>e.eventName))];
+  // A custom event is selected when selEvent starts with 'custom-event:'
+  const selCustomEvt = r.selEvent && r.selEvent.startsWith('custom-event:') ? r.selEvent.slice(13) : null;
+  const customEvOpts = customEventNames.map(name=>`<option value="custom-event:${escHtml(name)}"${selCustomEvt===name?' selected':''}>${escHtml(name)}</option>`).join('');
+  // Show custom matches only when the matching custom event is selected
+  const customMOpts = selCustomEvt
+    ? vidEntries2.filter(e=>e.eventName===selCustomEvt).map(e=>`<option value="custom:${e.id}"${r.selMatch==='custom:'+e.id?' selected':''}>${escHtml(e.matchName)}</option>`).join('')
+    : '';
+
   const t=syncMode?syncT:r.t;
-  const s=Math.floor(t), pct=Math.min((t/MAX_CLIP)*100,100).toFixed(1);
+  const dur=r.duration||MAX_CLIP;
+  const pct=Math.min((t/dur)*100,100).toFixed(1);
   const isPlaying=syncMode?syncPlaying:r.playing;
 
   const ctrlBar=syncMode?'':`
     <div class="ctrl-bar">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">-1S</div>
-        <button class="ctrl-btn" onclick="seek(${id},-1)" style="font-size:9px">-1s</button>
+      <div class="ctrl-btns-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">-1S</div>
+          <button class="ctrl-btn" onclick="seek(${id},-1)" style="font-size:9px">-1s</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">-1/6S</div>
+          <button class="ctrl-btn" onclick="seek(${id},-FRAME_SEC)">&#9664;&#9664;</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl" id="playlbl-${id}">${isPlaying?'PAUSE':'PLAY'}</div>
+          <button class="ctrl-btn play-btn${isPlaying?' playing':''}" onclick="togglePlay(${id})">${isPlaying?'&#9646;&#9646;':'&#9654;'}</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">+1/6S</div>
+          <button class="ctrl-btn" onclick="seek(${id},FRAME_SEC)">&#9654;&#9654;</button>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">+1S</div>
+          <button class="ctrl-btn" onclick="seek(${id},1)" style="font-size:9px">+1s</button>
+        </div>
+        <div class="ctrl-div"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
+          <div class="ctrl-lbl">LOOP</div>
+          <button class="ctrl-btn loop-btn${r.looping?' on':''}" onclick="toggleLoop(${id})">&#8635;</button>
+        </div>
+        <div class="ctrl-div"></div>
+        <div class="time-disp" id="td-${id}">${fmtTime(Math.floor(t))} / ${fmtTime(r.duration||MAX_CLIP)}</div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">-5F</div>
-        <button class="ctrl-btn" onclick="seek(${id},-FRAME_SEC)">&#9664;&#9664;</button>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">${isPlaying?'PAUSE':'PLAY'}</div>
-        <button class="ctrl-btn play-btn${isPlaying?' playing':''}" onclick="togglePlay(${id})">${isPlaying?'&#9646;&#9646;':'&#9654;'}</button>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">+5F</div>
-        <button class="ctrl-btn" onclick="seek(${id},FRAME_SEC)">&#9654;&#9654;</button>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">+1S</div>
-        <button class="ctrl-btn" onclick="seek(${id},1)" style="font-size:9px">+1s</button>
-      </div>
-      <div class="ctrl-div"></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px">
-        <div class="ctrl-lbl">LOOP</div>
-        <button class="ctrl-btn loop-btn${r.looping?' on':''}" onclick="toggleLoop(${id})">&#8635;</button>
-      </div>
-      <div class="ctrl-div"></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
-        <div class="time-disp" id="td-${id}">0:${String(s).padStart(2,'0')} / 0:40</div>
+      <div class="prog-row">
         <div class="prog-bar" onclick="scrub(event,${id})"><div class="prog-fill" id="pf-${id}" style="width:${pct}%"></div></div>
       </div>
     </div>`;
@@ -749,21 +923,42 @@ function updateCard(id) {
       ${fsWarn}
     </div>`:'';
 
+  // Build team scout entries section for this robot
+  const teamEntries = getTeamEntries(r.team);
+  const noteEntries = teamEntries.filter(e=>e.type==='note');
+  // Determine if match select should be enabled
+  const matchSelDisabled = (!r.selEvent || r.loadingMatches) ? 'disabled' : '';
+  // If a custom event is selected, show custom matches; otherwise show TBA matches
+  const matchOptsHtml = selCustomEvt
+    ? customMOpts
+    : mOpts;
+
   body.innerHTML=`
     <div class="row2">
       <div><div class="field-lbl">Event</div>
         <select onchange="onEventChange(${id},this.value)">
           <option value="">-- Select Event --</option>${evOpts}
+          ${customEvOpts ? `<optgroup label="── Custom ──">${customEvOpts}</optgroup>` : ''}
         </select></div>
       <div><div class="field-lbl">Match</div>
-        <select onchange="onMatchChange(${id},this.value)" ${!r.selEvent||r.loadingMatches?'disabled':''}>
-          <option value="">-- Select Match --</option>${mOpts}
+        <select onchange="onMatchChange(${id},this.value)" ${matchSelDisabled}>
+          <option value="">-- Select Match --</option>${matchOptsHtml}
         </select></div>
     </div>
     <div class="video-wrap" id="vwrap-${id}"></div>
     ${ctrlBar}
     ${offsetRow}`;
 
+  // Append notes section to body after innerHTML is set
+  if(noteEntries.length>0) {
+    const notesDiv = document.createElement('div');
+    notesDiv.style.cssText='display:flex;flex-direction:column;gap:5px;padding:0 0 4px';
+    notesDiv.innerHTML = '<div class="field-lbl" style="padding:4px 0 2px">SCOUT NOTES</div>' +
+      noteEntries.map(e=>`
+        <div class="entry-note-txt" id="cnote-${e.id}" onclick="startEditNoteInCard('${e.id}',${id})" style="font-size:12px;border:0.5px solid var(--border);border-radius:5px;padding:5px 7px;cursor:pointer;background:var(--bg)">${escHtml(e.text)}</div>
+      `).join('');
+    body.appendChild(notesDiv);
+  }
   populateVideoWrap(r, id);
 }
 
@@ -806,10 +1001,12 @@ function playR(id){
   refreshCtrl(id);
   const tick=ts=>{
     const ro=get(id);if(!ro||!ro.playing)return;
-    ro.t=Math.min(ro.t+(ts-ro.lastTs)/1000,MAX_CLIP);
+    const dur=ro.duration||MAX_CLIP;
+    ro.t=Math.min(ro.t+(ts-ro.lastTs)/1000,dur);
     ro.lastTs=ts;
     updateProg(id);
-    if(ro.t>=MAX_CLIP){
+    const loopEnd=ro.looping?Math.min(AUTO_LOOP_DUR,dur):dur;
+    if(ro.t>=loopEnd){
       if(ro.looping){ro.t=0;ytCmd(id,'seekTo',[ro.autoStart,true]);}
       else{pauseR(id);return;}
     }
@@ -827,34 +1024,40 @@ function pauseR(id){
 
 function seek(id,sec){
   const r=get(id);if(!r)return;
-  r.t=Math.max(0,Math.min(MAX_CLIP,r.t+sec));
+  const dur=r.duration||MAX_CLIP;
+  r.t=Math.max(0,Math.min(dur,r.t+sec));
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
 
 function scrub(e,id){
   const r=get(id);if(!r)return;
+  const dur=r.duration||MAX_CLIP;
   const rect=e.currentTarget.getBoundingClientRect();
-  r.t=Math.max(0,Math.min(MAX_CLIP,(e.clientX-rect.left)/rect.width*MAX_CLIP));
+  r.t=Math.max(0,Math.min(dur,(e.clientX-rect.left)/rect.width*dur));
   ytCmd(id,'seekTo',[r.autoStart+r.t,true]);
   updateProg(id);
 }
 
 function toggleLoop(id){const r=get(id);if(!r)return;r.looping=!r.looping;refreshCtrl(id);}
 
+function fmtTime(s){const m=Math.floor(s/60),sec=Math.floor(s%60);return `${m}:${String(sec).padStart(2,'0')}`;}
+
 function updateProg(id){
   const r=get(id);if(!r)return;
   const pf=document.getElementById(`pf-${id}`);const td=document.getElementById(`td-${id}`);
-  if(pf) pf.style.width=Math.min((r.t/MAX_CLIP)*100,100).toFixed(1)+'%';
-  if(td) td.textContent=compactMode?`0:${String(Math.floor(r.t)).padStart(2,'0')}`:`0:${String(Math.floor(r.t)).padStart(2,'0')} / 0:40`;
+  const dur=r.duration||MAX_CLIP;
+  if(pf) pf.style.width=Math.min((r.t/dur)*100,100).toFixed(2)+'%';
+  if(td) td.textContent=compactMode?fmtTime(r.t):`${fmtTime(r.t)} / ${fmtTime(dur)}`;
 }
 
 function refreshCtrl(id){
   const r=get(id);const body=document.getElementById(`body-${id}`);if(!r||!body)return;
-  const pb=body.querySelector('.play-btn');const lb=body.querySelector('.loop-btn');const lbls=body.querySelectorAll('.ctrl-lbl');
+  const pb=body.querySelector('.play-btn');const lb=body.querySelector('.loop-btn');
+  const playlbl=document.getElementById(`playlbl-${id}`);
   if(pb){pb.className='ctrl-btn play-btn'+(r.playing?' playing':'');pb.innerHTML=r.playing?'&#9646;&#9646;':'&#9654;';}
   if(lb) lb.className='ctrl-btn loop-btn'+(r.looping?' on':'');
-  if(lbls[1]) lbls[1].textContent=r.playing?'PAUSE':'PLAY';
+  if(playlbl) playlbl.textContent=r.playing?'PAUSE':'PLAY';
 }
 
 function destroyPlayer(r){
@@ -864,9 +1067,23 @@ function destroyPlayer(r){
 // ── SYNC MODE ─────────────────────────────────────────────────────────
 function toggleSync(){
   syncMode=!syncMode;
-  if(syncMode){syncT=0;syncPlaying=false;if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}}
-  else{if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}syncPlaying=false;}
-  robots.forEach(r=>{if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}r.playing=false;});
+  if(syncMode){
+    syncT=0;syncPlaying=false;
+    if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}
+    // Seek each video to its own saved autoStart offset
+    robots.forEach(r=>{
+      if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}
+      r.playing=false;
+      r.t=0;
+      ytCmd(r.id,'seekTo',[r.autoStart,true]);
+      ytCmd(r.id,'pauseVideo');
+    });
+  } else {
+    if(syncRafId){cancelAnimationFrame(syncRafId);syncRafId=null;}
+    syncPlaying=false;
+    syncLooping=false;
+    robots.forEach(r=>{if(r.rafId){cancelAnimationFrame(r.rafId);r.rafId=null;}r.playing=false;});
+  }
   updateSyncBtn();
   document.getElementById('syncBar').style.display=syncMode?'flex':'none';
   robots.forEach(r=>updateCard(r.id));
@@ -892,7 +1109,11 @@ function syncPlay(){
     syncLastTs=ts;
     updateSyncTime();
     robots.forEach(r=>{r.t=syncT;updateProg(r.id);});
-    if(syncT>=MAX_CLIP){syncPause();return;}
+    const syncEnd=syncLooping?Math.min(AUTO_LOOP_DUR,MAX_CLIP):MAX_CLIP;
+    if(syncT>=syncEnd){
+      if(syncLooping){syncT=0;robots.forEach(r=>{r.t=0;ytCmd(r.id,'seekTo',[r.autoStart,true]);});updateSyncTime();robots.forEach(r=>updateProg(r.id));}
+      else{syncPause();return;}
+    }
     syncRafId=requestAnimationFrame(tick);
   };
   syncRafId=requestAnimationFrame(tick);
@@ -906,7 +1127,8 @@ function syncPause(){
 }
 
 function syncSeek(sec){
-  syncT=Math.max(0,Math.min(MAX_CLIP,syncT+sec));
+  const maxT=robots.length>0?Math.min(...robots.map(r=>r.duration||MAX_CLIP)):MAX_CLIP;
+  syncT=Math.max(0,Math.min(maxT,syncT+sec));
   robots.forEach(r=>{r.t=syncT;ytCmd(r.id,'seekTo',[r.autoStart+syncT,true]);updateProg(r.id);});
   updateSyncTime();
 }
@@ -918,22 +1140,266 @@ function syncRestart(){
   updateSyncTime();
 }
 
+function toggleSyncLoop(){
+  syncLooping=!syncLooping;
+  const btn=document.getElementById('syncLoopBtn');
+  if(btn) btn.className='ctrl-btn loop-btn'+(syncLooping?' on':'');
+}
+
 function updateSyncTime(){
   const el=document.getElementById('syncTime');
-  if(el) el.textContent=`0:${String(Math.floor(syncT)).padStart(2,'0')}`;
+  if(el) el.textContent=fmtTime(syncT);
 }
 
 // Keep r.t accurate when user scrubs native YouTube player controls
 window.addEventListener('message', evt => {
   if(evt.origin!=='https://www.youtube.com') return;
   let data; try{data=JSON.parse(evt.data);}catch{return;}
-  if(data.event!=='infoDelivery'||data.info?.currentTime==null) return;
+  if(data.event!=='infoDelivery'||data.info==null) return;
   const r=robots.find(r=>{
     const f=document.getElementById(`yt-iframe-${r.id}`);
     return f&&f.contentWindow===evt.source;
   });
-  if(!r||syncMode) return;
-  r.t=Math.max(0,Math.min(MAX_CLIP,data.info.currentTime-r.autoStart));
+  if(!r) return;
+  // Capture video duration whenever YouTube reports it
+  if(data.info.duration>0) {
+    r.duration=data.info.duration;
+    updateProg(r.id);
+  }
+  if(data.info.currentTime==null||syncMode) return;
+  r.t=Math.max(0,Math.min(r.duration||MAX_CLIP,data.info.currentTime-r.autoStart));
   updateProg(r.id);
 });
+// ── TAB SWITCHING ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  const isScout = tab === 'scout';
+  document.getElementById('scoutTab').style.display = isScout ? 'flex' : 'none';
+  document.getElementById('scoutTab').style.flexDirection = 'column';
+  document.getElementById('scoutTab').style.gap = '10px';
+  document.getElementById('trackerTab').style.display = isScout ? 'none' : 'block';
+  document.getElementById('tabTrackerBtn').className = isScout ? 'tab-btn' : 'tab-btn active';
+  document.getElementById('tabScoutBtn').className = isScout ? 'tab-btn active' : 'tab-btn';
+  // Hide tracker-only header buttons when on scout tab
+  ['allianceBtn','compactBtn','syncBtn','addBtn'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = isScout ? 'none' : 'block';
+  });
+  if(!isScout) renderAll(); // refresh tracker
+  else renderEntries();
+}
+
+// ── SCOUT STATE ────────────────────────────────────────────────────────
+let scoutType = 'note'; // 'note' | 'video'
+let entryFilter = 'all'; // 'all' | 'note' | 'video'
+let scoutEntries = []; // loaded from Firestore
+let scoutUnsub = null;
+
+function setScoutType(t) {
+  scoutType = t;
+  document.getElementById('scoutTypeNote').className = 'scout-type-btn' + (t==='note'?' sel':'');
+  document.getElementById('scoutTypeVideo').className = 'scout-type-btn' + (t==='video'?' sel':'');
+  document.getElementById('scoutNoteForm').style.display = t==='note' ? 'flex' : 'none';
+  document.getElementById('scoutNoteForm').style.flexDirection = 'column';
+  document.getElementById('scoutNoteForm').style.gap = '10px';
+  document.getElementById('scoutVideoForm').style.display = t==='video' ? 'flex' : 'none';
+  document.getElementById('scoutVideoForm').style.flexDirection = 'column';
+  document.getElementById('scoutVideoForm').style.gap = '10px';
+}
+
+function setEntryFilter(f) {
+  entryFilter = f;
+  ['filterAll','filterNotes','filterVideos'].forEach(id => document.getElementById(id).className='scout-type-btn');
+  const map = {all:'filterAll',note:'filterNotes',video:'filterVideos'};
+  document.getElementById(map[f]).className = 'scout-type-btn sel';
+  renderEntries();
+}
+
+function extractYtId(raw) {
+  raw = raw.trim();
+  const m = raw.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : (raw.length === 11 && /^[A-Za-z0-9_-]+$/.test(raw) ? raw : null);
+}
+
+async function submitNote() {
+  const team = document.getElementById('scoutTeamInp').value.trim();
+  const text = document.getElementById('scoutNoteText').value.trim();
+  const st = document.getElementById('scoutNoteStatus');
+  if(!team||isNaN(team)||+team<1){st.className='sf-status err';st.textContent='Enter a valid team number.';return;}
+  if(!text){st.className='sf-status err';st.textContent='Note cannot be empty.';return;}
+  st.className='sf-status';st.textContent='Saving...';
+  try {
+    await db.collection('scout_entries').add({
+      team: team.toString(),
+      type: 'note',
+      text,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    st.className='sf-status ok';st.textContent='✓ Saved!';
+    document.getElementById('scoutNoteText').value='';
+    setTimeout(()=>{st.textContent='';},2000);
+  } catch(e) {
+    st.className='sf-status err';st.textContent='✗ '+e.message;
+  }
+}
+
+async function submitVideo() {
+  const team = document.getElementById('scoutTeamInp').value.trim();
+  const evtName = document.getElementById('scoutVidEvent').value.trim();
+  const matchName = document.getElementById('scoutVidMatch').value.trim();
+  const rawUrl = document.getElementById('scoutVidUrl').value.trim();
+  const st = document.getElementById('scoutVidStatus');
+  if(!team||isNaN(team)||+team<1){st.className='sf-status err';st.textContent='Enter a valid team number.';return;}
+  if(!evtName){st.className='sf-status err';st.textContent='Enter an event name.';return;}
+  if(!matchName){st.className='sf-status err';st.textContent='Enter a match.';return;}
+  const ytId = extractYtId(rawUrl);
+  if(!ytId){st.className='sf-status err';st.textContent='Invalid YouTube URL or ID.';return;}
+  st.className='sf-status';st.textContent='Saving...';
+  try {
+    await db.collection('scout_entries').add({
+      team: team.toString(),
+      type: 'video',
+      eventName: evtName,
+      matchName,
+      ytId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    st.className='sf-status ok';st.textContent='✓ Saved!';
+    document.getElementById('scoutVidEvent').value='';
+    document.getElementById('scoutVidMatch').value='';
+    document.getElementById('scoutVidUrl').value='';
+    setTimeout(()=>{st.textContent='';},2000);
+  } catch(e) {
+    st.className='sf-status err';st.textContent='✗ '+e.message;
+  }
+}
+
+function subscribeScoutEntries() {
+  if(scoutUnsub){scoutUnsub();scoutUnsub=null;}
+  scoutUnsub = db.collection('scout_entries')
+    .orderBy('createdAt','desc')
+    .onSnapshot(snap => {
+      scoutEntries = snap.docs.map(d=>({id:d.id,...d.data()}));
+      renderEntries();
+    }, err => {
+      console.warn('Scout entries error:', err.message);
+    });
+}
+
+function renderEntries() {
+  const container = document.getElementById('scoutEntries');
+  if(!container) return;
+  const filterTeam = document.getElementById('scoutFilterTeam')?.value.trim();
+  let entries = scoutEntries;
+  if(filterTeam) entries = entries.filter(e=>e.team===filterTeam);
+  if(entryFilter!=='all') entries = entries.filter(e=>e.type===entryFilter);
+  if(entries.length===0){
+    container.innerHTML='<div class="scout-empty">// NO ENTRIES YET</div>';
+    return;
+  }
+  container.innerHTML = entries.map(e => renderEntry(e)).join('');
+}
+
+function renderEntry(e) {
+  const ts = e.createdAt?.toDate ? e.createdAt.toDate().toLocaleDateString() : '';
+  const tag = e.type==='note'
+    ? '<span class="entry-tag note">NOTE</span>'
+    : '<span class="entry-tag video">VIDEO</span>';
+  const bodyHtml = e.type==='note'
+    ? `<div class="entry-note-txt" id="note-txt-${e.id}" onclick="startEditNote('${e.id}')">${escHtml(e.text)}</div>`
+    : `<div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:4px">${escHtml(e.eventName)} · ${escHtml(e.matchName)}</div>
+       <div class="entry-vid-wrap"><iframe src="https://www.youtube.com/embed/${e.ytId}?controls=1&rel=0&playsinline=1" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>`;
+  return `<div class="entry-card" id="ecard-${e.id}">
+    <div class="entry-head">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="entry-team">#${e.team}</span>${tag}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="entry-meta">${ts}</span>
+        <button class="entry-del" onclick="deleteEntry('${e.id}')" title="Delete">&#10005;</button>
+      </div>
+    </div>
+    <div class="entry-body" id="ebody-${e.id}">${bodyHtml}</div>
+  </div>`;
+}
+
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function startEditNote(entryId) {
+  const e = scoutEntries.find(x=>x.id===entryId);
+  if(!e) return;
+  const body = document.getElementById(`ebody-${entryId}`);
+  if(!body) return;
+  body.innerHTML = `
+    <textarea class="entry-note-edit" id="note-edit-${entryId}">${escHtml(e.text)}</textarea>
+    <div class="entry-note-btns">
+      <button class="entry-note-cancel" onclick="cancelEditNote('${entryId}')">Cancel</button>
+      <button class="entry-note-save" onclick="saveEditNote('${entryId}')">Save</button>
+    </div>`;
+  document.getElementById(`note-edit-${entryId}`)?.focus();
+}
+
+function cancelEditNote(entryId) {
+  const e = scoutEntries.find(x=>x.id===entryId);
+  if(!e) return;
+  const body = document.getElementById(`ebody-${entryId}`);
+  if(body) body.innerHTML = `<div class="entry-note-txt" id="note-txt-${e.id}" onclick="startEditNote('${e.id}')">${escHtml(e.text)}</div>`;
+}
+
+async function saveEditNote(entryId) {
+  const ta = document.getElementById(`note-edit-${entryId}`);
+  if(!ta) return;
+  const newText = ta.value.trim();
+  if(!newText) return;
+  try {
+    await db.collection('scout_entries').doc(entryId).update({text: newText});
+    // onSnapshot will refresh scoutEntries and re-render
+  } catch(e) {
+    alert('Save failed: '+e.message);
+  }
+}
+
+async function deleteEntry(entryId) {
+  if(!confirm('Delete this entry?')) return;
+  try {
+    await db.collection('scout_entries').doc(entryId).delete();
+  } catch(e) {
+    alert('Delete failed: '+e.message);
+  }
+}
+
+// ── EXPOSE SCOUT ENTRIES TO ROBOT CARDS ───────────────────────────────
+function getTeamEntries(team) {
+  return scoutEntries.filter(e=>e.team===String(team));
+}
+
+
+function startEditNoteInCard(entryId, robotId) {
+  const e = scoutEntries.find(x=>x.id===entryId);
+  if(!e) return;
+  const el = document.getElementById(`cnote-${entryId}`);
+  if(!el) return;
+  el.outerHTML = `
+    <div id="cnote-edit-wrap-${entryId}">
+      <textarea class="entry-note-edit" id="cnote-edit-${entryId}" style="font-size:12px">${escHtml(e.text)}</textarea>
+      <div class="entry-note-btns">
+        <button class="entry-note-cancel" onclick="cancelCardNote('${entryId}',${robotId})">Cancel</button>
+        <button class="entry-note-save" onclick="saveCardNote('${entryId}',${robotId})">Save</button>
+      </div>
+    </div>`;
+  document.getElementById(`cnote-edit-${entryId}`)?.focus();
+}
+
+function cancelCardNote(entryId, robotId) { updateCard(robotId); }
+
+async function saveCardNote(entryId, robotId) {
+  const ta = document.getElementById(`cnote-edit-${entryId}`);
+  if(!ta) return;
+  const newText = ta.value.trim();
+  if(!newText) return;
+  try {
+    await db.collection('scout_entries').doc(entryId).update({text: newText});
+    // onSnapshot refreshes scoutEntries, then updateCard re-renders
+  } catch(e2) { alert('Save failed: '+e2.message); }
+}
+
 </script>
