@@ -1566,15 +1566,24 @@ async function loadAutosRepo() {
       branch=parsed.branch||proj.default_branch||'main';
       autosRawBase=`https://${host}/${projectPath}/-/raw/${branch}`;
     }
-    const autosPath='src/main/deploy/pathplanner/autos';
-    const fileNames=await fetchDirListing(platform,apiBase,autosPath,branch,autosHeaders);
-    const autoFiles=fileNames.filter(n=>n.endsWith('.auto'));
-    if(!autoFiles.length) throw new Error('No .auto files found');
-    st.textContent=`// Loading ${autoFiles.length} autos...`;
-    const autos=await Promise.all(autoFiles.map(async name=>{
-      const raw=await fetch(`${autosRawBase}/${autosPath}/${encodeURIComponent(name)}`,{headers:autosHeaders}).then(r=>r.text());
-      return {name:name.replace('.auto',''),data:JSON.parse(raw)};
-    }));
+    // Discover autos directory — try common WPILib project layouts
+    let autosPath=null, autoFiles=[];
+    for(const ap of ['src/main/deploy/pathplanner/autos','deploy/pathplanner/autos']) {
+      try {
+        const files=await fetchDirListing(platform,apiBase,ap,branch,autosHeaders);
+        const found=files.filter(n=>n.endsWith('.auto'));
+        if(found.length){autosPath=ap;autoFiles=found;break;}
+      } catch(e){}
+    }
+    const autos=[];
+    if(autosPath&&autoFiles.length) {
+      st.textContent=`// Loading ${autoFiles.length} autos...`;
+      const loaded=await Promise.allSettled(autoFiles.map(async name=>{
+        const raw=await fetch(`${autosRawBase}/${autosPath}/${encodeURIComponent(name)}`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+        return {name:name.replace('.auto',''),data:JSON.parse(raw)};
+      }));
+      loaded.forEach(r=>{if(r.status==='fulfilled')autos.push(r.value);});
+    }
     autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
     pathsCache={}; choreoCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
     pathsList=[]; choreoList=[]; choreoPathBase='';
@@ -1584,13 +1593,19 @@ async function loadAutosRepo() {
       if(b) b.className='autos-src-btn'+(s==='autos'?' sel':'');
     });
 
-    // Load individual paths listing
-    try {
-      const pf=await fetchDirListing(platform,apiBase,'src/main/deploy/pathplanner/paths',branch,autosHeaders);
-      pathsList=pf.filter(n=>n.endsWith('.path')).map(n=>({name:n.replace('.path','')})).sort((a,b)=>a.name.localeCompare(b.name));
-    } catch(e){}
+    // Discover paths directory
+    for(const pp of ['src/main/deploy/pathplanner/paths','deploy/pathplanner/paths']) {
+      try {
+        const pf=await fetchDirListing(platform,apiBase,pp,branch,autosHeaders);
+        const found=pf.filter(n=>n.endsWith('.path'));
+        if(found.length){
+          pathsList=found.map(n=>({name:n.replace('.path','')})).sort((a,b)=>a.name.localeCompare(b.name));
+          break;
+        }
+      } catch(e){}
+    }
 
-    // Load choreo listing — try both common directory locations
+    // Discover choreo directory
     for(const cp of ['deploy/choreo','src/main/deploy/choreo']) {
       try {
         const cf=await fetchDirListing(platform,apiBase,cp,branch,autosHeaders);
@@ -1603,11 +1618,32 @@ async function loadAutosRepo() {
       } catch(e){}
     }
 
+    if(!autosList.length&&!pathsList.length&&!choreoList.length)
+      throw new Error('No PathPlanner or Choreo files found in this repo');
+
+    // Show source bar when at least two source types are available
     const srcBar=document.getElementById('autosSrcBar');
-    if(srcBar) srcBar.style.display=(pathsList.length||choreoList.length)?'flex':'none';
+    const srcCount=[autosList.length>0,pathsList.length>0,choreoList.length>0].filter(Boolean).length;
+    if(srcBar) {
+      srcBar.style.display=srcCount>1?'flex':'none';
+      // Hide tabs for sources with no content
+      const bA=document.getElementById('srcBtnAutos'); if(bA) bA.style.display=autosList.length?'':'none';
+      const bP=document.getElementById('srcBtnPaths'); if(bP) bP.style.display=pathsList.length?'':'none';
+      const bC=document.getElementById('srcBtnChoreo'); if(bC) bC.style.display=choreoList.length?'':'none';
+    }
+
+    // If no autos found, default to whichever source has content
+    if(!autosList.length) {
+      autosSource=pathsList.length?'paths':'choreo';
+      ['autos','paths','choreo'].forEach(s=>{
+        const b=document.getElementById('srcBtn'+s[0].toUpperCase()+s.slice(1));
+        if(b) b.className='autos-src-btn'+(s===autosSource?' sel':'');
+      });
+    }
 
     const displayName=platform==='github'?`${parsed.owner}/${parsed.repo}`:parsed.projectPath;
-    const parts=[`${autos.length} auto${autos.length!==1?'s':''}`];
+    const parts=[];
+    if(autosList.length) parts.push(`${autosList.length} auto${autosList.length!==1?'s':''}`);
     if(pathsList.length) parts.push(`${pathsList.length} path${pathsList.length!==1?'s':''}`);
     if(choreoList.length) parts.push(`${choreoList.length} choreo`);
     st.className='autos-status ok';
