@@ -194,6 +194,16 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
 .autos-src-btn{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.5px;padding:4px 10px;border-radius:5px;cursor:pointer;border:0.5px solid var(--border);background:var(--panel);color:var(--muted);transition:all .12s}
 .autos-src-btn.sel{background:rgba(60,0,100,.4);border-color:var(--accent);color:var(--accent)}
 .autos-src-btn:hover:not(.sel){border-color:var(--muted);color:var(--txt)}
+.autos-hist-btn{background:var(--panel);border:0.5px solid var(--border);color:var(--muted);width:26px;height:26px;border-radius:5px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.autos-hist-btn:hover{border-color:var(--muted);color:var(--txt)}
+.autos-hist-wrap{position:relative}
+.autos-hist-drop{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--panel);border:0.5px solid var(--border);border-radius:6px;z-index:50;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.autos-hist-item{display:flex;align-items:center;gap:6px;padding:7px 10px;cursor:pointer;transition:background .1s}
+.autos-hist-item:hover{background:rgba(197,180,227,.08)}
+.autos-hist-url{flex:1;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--txt);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.autos-hist-x{font-size:13px;color:var(--muted);line-height:1;padding:0 2px;flex-shrink:0;transition:color .1s}
+.autos-hist-x:hover{color:var(--danger)}
+.autos-hist-empty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);padding:8px 10px;opacity:.6}
 .autos-ctrl-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .autos-speed-sel{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23c7c9c7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 
@@ -395,9 +405,12 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
     <div id="autosTab" style="display:none">
       <div class="autos-repo-bar">
         <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap">REPO</span>
-        <input class="autos-repo-inp" id="autosRepoInp" placeholder="https://github.com/... or https://gitlab.com/..." onkeydown="if(event.key==='Enter')loadAutosRepo()"/>
-        <input class="autos-repo-inp" id="autosTokenInp" type="password" placeholder="Token (optional)" style="max-width:140px" oninput="saveAutosToken(this.value)" title="Personal access token for private/self-hosted GitLab repos"/>
-        <button class="key-btn" onclick="loadAutosRepo()">LOAD</button>
+        <div class="autos-hist-wrap" style="flex:1;min-width:0;display:flex;flex-direction:column">
+          <input class="autos-repo-inp" id="autosRepoInp" placeholder="https://github.com/... or https://gitlab.com/..." onkeydown="if(event.key==='Enter')loadAutosRepo()" style="width:100%"/>
+          <div class="autos-hist-drop" id="autosHistDrop" style="display:none"></div>
+        </div>
+        <button class="autos-hist-btn" id="autosHistBtn" onclick="toggleAutosHistory()" title="Recent repos">&#9660;</button>
+<button class="key-btn" onclick="loadAutosRepo()">LOAD</button>
       </div>
       <div class="autos-status" id="autosStatus"></div>
       <div class="autos-src-bar" id="autosSrcBar" style="display:none">
@@ -1470,6 +1483,7 @@ let pathsList=[], choreoList=[], choreoCache={}, choreoPathBase='';
 let autosPlatform='', autosApiBase='', autosBranch='';
 let autosPathsDir='', autosChoreoDir='';
 let blobShaCache={}; // GitLab: filePath → blob SHA (avoids %2F nginx decode issues)
+let autosRepoHistory=[];
 let autosToken=localStorage.getItem('autosToken')||'';
 let autosHeaders={};
 
@@ -1680,7 +1694,7 @@ async function loadAutosRepo() {
     st.className='autos-status ok';
     st.textContent=`✓ ${parts.join(' · ')} from ${displayName}`;
     renderAutosList(); updateAutosTime(); drawField();
-    db.collection('config').doc('settings').set({autosRepo:url},{merge:true}).catch(()=>{});
+    saveAutosToHistory(url);
   } catch(e) {
     st.className='autos-status err';st.textContent='✗ '+e.message;
   }
@@ -1693,11 +1707,74 @@ async function loadAutosSettings() {
   }
   try {
     const doc=await db.collection('config').doc('settings').get();
-    if(doc.exists&&doc.data().autosRepo) {
-      const inp=document.getElementById('autosRepoInp');
-      if(inp&&!inp.value) inp.value=doc.data().autosRepo;
+    if(doc.exists) {
+      const data=doc.data();
+      // Load history (new) or migrate from legacy single-repo field
+      if(Array.isArray(data.autosRepoHistory)) {
+        autosRepoHistory=data.autosRepoHistory;
+      } else if(data.autosRepo) {
+        autosRepoHistory=[data.autosRepo];
+      }
+      // Pre-fill input with most recent repo
+      if(autosRepoHistory.length) {
+        const inp=document.getElementById('autosRepoInp');
+        if(inp&&!inp.value) inp.value=autosRepoHistory[0];
+      }
     }
   } catch(e){}
+}
+
+function saveAutosToHistory(url) {
+  autosRepoHistory=autosRepoHistory.filter(u=>u!==url);
+  autosRepoHistory.unshift(url);
+  if(autosRepoHistory.length>10) autosRepoHistory.length=10;
+  db.collection('config').doc('settings').set({autosRepoHistory,autosRepo:url},{merge:true}).catch(()=>{});
+}
+
+function renderAutosHistory() {
+  const drop=document.getElementById('autosHistDrop'); if(!drop) return;
+  if(!autosRepoHistory.length) {
+    drop.innerHTML='<div class="autos-hist-empty">// No recent repos</div>';
+    return;
+  }
+  drop.innerHTML=autosRepoHistory.map((u,i)=>`
+    <div class="autos-hist-item" onclick="selectAutosHistory(${i})">
+      <span class="autos-hist-url" title="${escHtml(u)}">${escHtml(u)}</span>
+      <span class="autos-hist-x" onclick="removeAutosHistory(event,${i})">&#x2715;</span>
+    </div>`).join('');
+}
+
+function toggleAutosHistory() {
+  const drop=document.getElementById('autosHistDrop');
+  const btn=document.getElementById('autosHistBtn');
+  if(!drop) return;
+  const open=drop.style.display==='none';
+  if(open) { renderAutosHistory(); drop.style.display='block'; btn.textContent='▲'; }
+  else { drop.style.display='none'; btn.textContent='▾'; }
+}
+
+function selectAutosHistory(idx) {
+  const url=autosRepoHistory[idx]; if(!url) return;
+  const inp=document.getElementById('autosRepoInp');
+  if(inp) inp.value=url;
+  const drop=document.getElementById('autosHistDrop');
+  const btn=document.getElementById('autosHistBtn');
+  if(drop) drop.style.display='none';
+  if(btn) btn.textContent='▾';
+  loadAutosRepo();
+}
+
+function removeAutosHistory(e, idx) {
+  e.stopPropagation();
+  autosRepoHistory.splice(idx,1);
+  db.collection('config').doc('settings').set({autosRepoHistory},{merge:true}).catch(()=>{});
+  renderAutosHistory();
+  if(!autosRepoHistory.length) {
+    const drop=document.getElementById('autosHistDrop');
+    const btn=document.getElementById('autosHistBtn');
+    if(drop) drop.style.display='none';
+    if(btn) btn.textContent='▾';
+  }
 }
 
 function setAutosSource(src) {
@@ -2082,5 +2159,14 @@ function onShowAutosTab() {
   if(!autosCanvas) setTimeout(()=>{initAutosCanvas();loadAutosSettings();},60);
   else drawField();
 }
+
+document.addEventListener('click',e=>{
+  const drop=document.getElementById('autosHistDrop');
+  const btn=document.getElementById('autosHistBtn');
+  if(drop&&drop.style.display!=='none'&&!drop.contains(e.target)&&e.target!==btn) {
+    drop.style.display='none';
+    if(btn) btn.textContent='▾';
+  }
+});
 
 </script>
