@@ -392,6 +392,7 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
       <div class="autos-repo-bar">
         <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap">REPO</span>
         <input class="autos-repo-inp" id="autosRepoInp" placeholder="https://github.com/... or https://gitlab.com/..." onkeydown="if(event.key==='Enter')loadAutosRepo()"/>
+        <input class="autos-repo-inp" id="autosTokenInp" type="password" placeholder="Token (optional)" style="max-width:140px" oninput="saveAutosToken(this.value)" title="Personal access token for private/self-hosted GitLab repos"/>
         <button class="key-btn" onclick="loadAutosRepo()">LOAD</button>
       </div>
       <div class="autos-status" id="autosStatus"></div>
@@ -1455,6 +1456,13 @@ const FIELD_IMG_TL=[245,118], FIELD_IMG_BR=[3942,1914];
 const FIELD_W=16.541, FIELD_H=8.069;
 
 let autosRawBase='', autosList=[], pathsCache={}, selectedAutoIdx=-1;
+let autosToken=localStorage.getItem('autosToken')||'';
+let autosHeaders={};
+
+function saveAutosToken(v){
+  autosToken=v;
+  v?localStorage.setItem('autosToken',v):localStorage.removeItem('autosToken');
+}
 let currentTrajectory=null, autosTotalTime=0;
 let autosCanvas=null, autosCtx=null, autosFieldImg=null;
 let autosPlaying=false, autosT=0, autosLastTs=null, autosRafId=null, autosSpeed=1.0;
@@ -1486,15 +1494,15 @@ function parseRepo(url) {
   return null;
 }
 
-async function fetchDirListing(platform, apiBase, path, branch) {
+async function fetchDirListing(platform, apiBase, path, branch, headers={}) {
   if(platform==='github') {
-    const r=await fetch(`${apiBase}/contents/${path}`);
+    const r=await fetch(`${apiBase}/contents/${path}`,{headers});
     if(!r.ok) throw new Error(`${path} not found (${r.status})`);
     const d=await r.json();
     return Array.isArray(d)?d.filter(f=>f.type==='file').map(f=>f.name):[];
   } else {
-    const r=await fetch(`${apiBase}/repository/tree?path=${encodeURIComponent(path)}&ref=${encodeURIComponent(branch)}&per_page=100`);
-    if(!r.ok) throw new Error(`${path} not found (${r.status})`);
+    const r=await fetch(`${apiBase}/repository/tree?path=${encodeURIComponent(path)}&ref=${encodeURIComponent(branch)}&per_page=100`,{headers});
+    if(!r.ok) throw new Error(r.status===401?`Auth required — add a token (${r.status})`:`${path} not found (${r.status})`);
     const d=await r.json();
     return Array.isArray(d)?d.filter(f=>f.type==='blob').map(f=>f.name):[];
   }
@@ -1503,13 +1511,15 @@ async function fetchDirListing(platform, apiBase, path, branch) {
 async function loadAutosRepo() {
   const inp=document.getElementById('autosRepoInp');
   const st=document.getElementById('autosStatus');
-  const url=inp.value.trim();
+  let url=inp.value.trim();
   if(!url){st.className='autos-status err';st.textContent='✗ Enter a GitHub or GitLab repo URL';return;}
+  if(!/^https?:\/\//i.test(url)) url='https://'+url;
   const parsed=parseRepo(url);
   if(!parsed){st.className='autos-status err';st.textContent='✗ Invalid GitHub or GitLab URL';return;}
   const {platform}=parsed;
   st.className='autos-status checking';st.textContent='// Connecting...';
   try {
+    autosHeaders = platform==='gitlab' && autosToken ? {'PRIVATE-TOKEN':autosToken} : {};
     let apiBase, branch;
     if(platform==='github') {
       const {owner,repo}=parsed;
@@ -1517,7 +1527,7 @@ async function loadAutosRepo() {
       if(parsed.branch) {
         branch=parsed.branch;
       } else {
-        const info=await fetch(apiBase).then(r=>{if(!r.ok)throw new Error(`Repo not found (${r.status})`);return r.json();});
+        const info=await fetch(apiBase,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(`Repo not found (${r.status})`);return r.json();});
         branch=info.default_branch||'main';
       }
       autosRawBase=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}`;
@@ -1527,18 +1537,21 @@ async function loadAutosRepo() {
       if(parsed.branch) {
         branch=parsed.branch;
       } else {
-        const info=await fetch(apiBase).then(r=>{if(!r.ok)throw new Error(`Repo not found (${r.status})`);return r.json();});
+        const info=await fetch(apiBase,{headers:autosHeaders}).then(r=>{
+          if(!r.ok) throw new Error(r.status===401?`Auth required — add a token (${r.status})`:`Repo not found (${r.status})`);
+          return r.json();
+        });
         branch=info.default_branch||'main';
       }
       autosRawBase=`https://${host}/${projectPath}/-/raw/${branch}`;
     }
     const autosPath='src/main/deploy/pathplanner/autos';
-    const fileNames=await fetchDirListing(platform,apiBase,autosPath,branch);
+    const fileNames=await fetchDirListing(platform,apiBase,autosPath,branch,autosHeaders);
     const autoFiles=fileNames.filter(n=>n.endsWith('.auto'));
     if(!autoFiles.length) throw new Error('No .auto files found');
     st.textContent=`// Loading ${autoFiles.length} autos...`;
     const autos=await Promise.all(autoFiles.map(async name=>{
-      const raw=await fetch(`${autosRawBase}/${autosPath}/${encodeURIComponent(name)}`).then(r=>r.text());
+      const raw=await fetch(`${autosRawBase}/${autosPath}/${encodeURIComponent(name)}`,{headers:autosHeaders}).then(r=>r.text());
       return {name:name.replace('.auto',''),data:JSON.parse(raw)};
     }));
     autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
@@ -1554,6 +1567,10 @@ async function loadAutosRepo() {
 }
 
 async function loadAutosSettings() {
+  if(autosToken) {
+    const ti=document.getElementById('autosTokenInp');
+    if(ti) ti.value=autosToken;
+  }
   try {
     const doc=await db.collection('config').doc('settings').get();
     if(doc.exists&&doc.data().autosRepo) {
@@ -1601,7 +1618,7 @@ async function selectAuto(idx) {
   const pathsDir='src/main/deploy/pathplanner/paths';
   await Promise.all(pathNames.filter(n=>!pathsCache[n]).map(async n=>{
     try {
-      const raw=await fetch(`${autosRawBase}/${pathsDir}/${encodeURIComponent(n)}.path`).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      const raw=await fetch(`${autosRawBase}/${pathsDir}/${encodeURIComponent(n)}.path`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
       pathsCache[n]=JSON.parse(raw);
     } catch(e){console.warn('Path load failed:',n,e.message);}
   }));
