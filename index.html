@@ -1469,6 +1469,7 @@ let autosSource='autos';
 let pathsList=[], choreoList=[], choreoCache={}, choreoPathBase='';
 let autosPlatform='', autosApiBase='', autosBranch='';
 let autosPathsDir='', autosChoreoDir='';
+let blobShaCache={}; // GitLab: filePath → blob SHA (avoids %2F nginx decode issues)
 let autosToken=localStorage.getItem('autosToken')||'';
 let autosHeaders={};
 
@@ -1477,10 +1478,19 @@ function saveAutosToken(v){
   v?localStorage.setItem('autosToken',v):localStorage.removeItem('autosToken');
 }
 
-// Use GitLab file API for self-hosted instances (avoids CORS on /-/raw/ URLs)
+// Fetch a repo file by path. For GitLab, uses blob SHA to avoid %2F nginx decode issues.
 async function fetchRepoFile(filePath) {
   if(autosPlatform==='gitlab') {
-    const r=await fetch(`${autosApiBase}/repository/files/${encodeURIComponent(filePath)}/raw?ref=${encodeURIComponent(autosBranch)}`,{headers:autosHeaders});
+    const sha=blobShaCache[filePath];
+    if(sha) {
+      // /repository/blobs/:sha/raw — SHA is hex, no slashes, nginx-safe
+      const r=await fetch(`${autosApiBase}/repository/blobs/${sha}/raw`,{headers:autosHeaders});
+      if(!r.ok) throw new Error(r.status);
+      return r.text();
+    }
+    // Fallback: files API with double-encoded path to survive nginx %2F decode
+    const encoded=encodeURIComponent(filePath).replace(/%2F/gi,'%252F');
+    const r=await fetch(`${autosApiBase}/repository/files/${encoded}/raw?ref=${encodeURIComponent(autosBranch)}`,{headers:autosHeaders});
     if(!r.ok) throw new Error(r.status);
     return r.text();
   }
@@ -1529,7 +1539,10 @@ async function fetchDirListing(platform, apiBase, path, branch, headers={}) {
     const r=await fetch(`${apiBase}/repository/tree?path=${encodeURIComponent(path)}&ref=${encodeURIComponent(branch)}&per_page=100`,{headers});
     if(!r.ok) throw new Error(r.status===401?`Auth required — add a token (${r.status})`:`${path} not found (${r.status})`);
     const d=await r.json();
-    return Array.isArray(d)?d.filter(f=>f.type==='blob').map(f=>f.name):[];
+    if(!Array.isArray(d)) return [];
+    // Cache blob SHAs by full path — used by fetchRepoFile to avoid %2F nginx issues
+    d.filter(f=>f.type==='blob').forEach(f=>{ blobShaCache[f.path]=f.id; });
+    return d.filter(f=>f.type==='blob').map(f=>f.name);
   }
 }
 
@@ -1600,7 +1613,7 @@ async function loadAutosRepo() {
       loaded.forEach(r=>{if(r.status==='fulfilled')autos.push(r.value);});
     }
     autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
-    pathsCache={}; choreoCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
+    pathsCache={}; choreoCache={}; blobShaCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
     pathsList=[]; choreoList=[]; choreoPathBase='';
     autosPathsDir=''; autosChoreoDir='';
     autosSource='autos';
