@@ -1508,6 +1508,22 @@ async function fetchDirListing(platform, apiBase, path, branch, headers={}) {
   }
 }
 
+async function findGitLabProject(host, projectPath, headers) {
+  // Try direct path lookup first
+  const direct=await fetch(`https://${host}/api/v4/projects/${encodeURIComponent(projectPath)}`,{headers});
+  if(direct.ok) return direct.json();
+  if(direct.status===401) throw new Error(`Auth required — add a token (401)`);
+
+  // Fall back to search — handles nginx %2F decode issues common on self-hosted instances
+  const projectName=projectPath.split('/').pop();
+  const search=await fetch(`https://${host}/api/v4/projects?search=${encodeURIComponent(projectName)}&per_page=100`,{headers});
+  if(!search.ok) throw new Error(`Repo not found (${direct.status})`);
+  const results=await search.json();
+  const match=results.find(p=>p.path_with_namespace===projectPath);
+  if(match) return match;
+  throw new Error(`Repo not found — check the URL (${direct.status})`);
+}
+
 async function loadAutosRepo() {
   const inp=document.getElementById('autosRepoInp');
   const st=document.getElementById('autosStatus');
@@ -1533,16 +1549,10 @@ async function loadAutosRepo() {
       autosRawBase=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}`;
     } else {
       const {host,projectPath}=parsed;
-      apiBase=`https://${host}/api/v4/projects/${encodeURIComponent(projectPath)}`;
-      if(parsed.branch) {
-        branch=parsed.branch;
-      } else {
-        const info=await fetch(apiBase,{headers:autosHeaders}).then(r=>{
-          if(!r.ok) throw new Error(r.status===401?`Auth required — add a token (${r.status})`:`Repo not found (${r.status})`);
-          return r.json();
-        });
-        branch=info.default_branch||'main';
-      }
+      const proj=await findGitLabProject(host,projectPath,autosHeaders);
+      // Use numeric ID for all subsequent calls — avoids %2F nginx decode issues
+      apiBase=`https://${host}/api/v4/projects/${proj.id}`;
+      branch=parsed.branch||proj.default_branch||'main';
       autosRawBase=`https://${host}/${projectPath}/-/raw/${branch}`;
     }
     const autosPath='src/main/deploy/pathplanner/autos';
