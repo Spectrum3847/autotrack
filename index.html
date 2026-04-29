@@ -183,14 +183,13 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
 .autos-repo-inp:focus{outline:none;border-color:var(--accent)}.autos-repo-inp::placeholder{color:var(--muted)}
 .autos-status{font-family:'Share Tech Mono',monospace;font-size:10px;min-height:14px;letter-spacing:.5px;padding:1px 0}
 .autos-status.ok{color:var(--success)}.autos-status.err{color:var(--danger)}.autos-status.checking{color:var(--accent);animation:blink .7s infinite}
-.autos-body{display:flex;gap:10px;align-items:flex-start}
-.autos-list{display:flex;flex-direction:column;gap:2px;width:165px;flex-shrink:0;max-height:390px;overflow-y:auto;background:var(--panel);border:0.5px solid var(--border);border-radius:8px;padding:6px}
-.autos-folder{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;padding:6px 6px 3px;border-bottom:0.5px solid var(--border);margin-bottom:2px}
-.autos-item{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--txt);padding:5px 8px;border-radius:5px;cursor:pointer;transition:all .12s;border:0.5px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.autos-item:hover{background:rgba(197,180,227,.1);border-color:var(--border)}.autos-item.sel{background:rgba(60,0,100,.4);border-color:var(--accent);color:var(--accent)}
-.autos-empty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);padding:10px;text-align:center;opacity:.6;line-height:1.6}
-.autos-canvas-wrap{flex:1;min-width:0;aspect-ratio:800/390;background:#0a0f18;border:0.5px solid var(--border);border-radius:8px;overflow:hidden}
+.autos-canvas-wrap{width:100%;aspect-ratio:800/390;background:#0a0f18;border:0.5px solid var(--border);border-radius:8px;overflow:hidden}
 .autos-canvas-wrap canvas{display:block;width:100%;height:100%}
+.autos-list{display:flex;flex-wrap:wrap;gap:4px;padding:6px 0;max-height:120px;overflow-y:auto}
+.autos-folder{width:100%;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;padding:4px 2px 2px;border-bottom:0.5px solid var(--border);margin-top:2px}
+.autos-item{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--txt);padding:4px 10px;border-radius:5px;cursor:pointer;transition:all .12s;border:0.5px solid var(--border);white-space:nowrap;background:var(--panel)}
+.autos-item:hover{border-color:var(--muted);color:var(--txt);background:rgba(197,180,227,.1)}.autos-item.sel{background:rgba(60,0,100,.4);border-color:var(--accent);color:var(--accent)}
+.autos-empty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);padding:6px 2px;opacity:.6}
 .autos-ctrl-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .autos-speed-sel{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23c7c9c7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 
@@ -391,15 +390,12 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
     <!-- AUTOS TAB -->
     <div id="autosTab" style="display:none">
       <div class="autos-repo-bar">
-        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap">GITHUB REPO</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap">REPO</span>
         <input class="autos-repo-inp" id="autosRepoInp" placeholder="https://github.com/... or https://gitlab.com/..." onkeydown="if(event.key==='Enter')loadAutosRepo()"/>
         <button class="key-btn" onclick="loadAutosRepo()">LOAD</button>
       </div>
       <div class="autos-status" id="autosStatus"></div>
-      <div class="autos-body">
-        <div class="autos-list" id="autosListEl"><div class="autos-empty">// No repo loaded</div></div>
-        <div class="autos-canvas-wrap" id="autosCanvasWrap"><canvas id="autosCanvas"></canvas></div>
-      </div>
+      <div class="autos-canvas-wrap" id="autosCanvasWrap"><canvas id="autosCanvas"></canvas></div>
       <div class="autos-ctrl-bar">
         <button class="ctrl-btn" onclick="autosReset()" style="width:28px;height:28px;font-size:11px" title="Reset">&#9632;</button>
         <button class="ctrl-btn play-btn" id="autosPlayBtn" onclick="autosTogglePlay()">&#9654;</button>
@@ -414,6 +410,7 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
           <option value="2">2×</option>
         </select>
       </div>
+      <div class="autos-list" id="autosListEl"><div class="autos-empty">// No repo loaded</div></div>
     </div><!-- /autosTab -->
   </div>
 
@@ -1464,16 +1461,27 @@ let autosPlaying=false, autosT=0, autosLastTs=null, autosRafId=null, autosSpeed=
 
 function parseRepo(url) {
   // GitHub: https://github.com/owner/repo[/tree/branch[/path...]]
-  let m=url.match(/github\.com\/([^\/]+)\/([^\/\s?#]+)(?:\/tree\/([^?#\s]+))?/);
-  if(m) {
-    const branch=m[3]?m[3].split('/')[0]||null:null;
-    return {platform:'github',owner:m[1],repo:m[2].replace(/\.git$/,''),branch};
+  const ghm=url.match(/github\.com\/([^\/]+)\/([^\/\s?#]+)(?:\/tree\/([^?#\s]+))?/);
+  if(ghm) {
+    const branch=ghm[3]?ghm[3].split('/')[0]||null:null;
+    return {platform:'github',owner:ghm[1],repo:ghm[2].replace(/\.git$/,''),branch};
   }
-  // GitLab: https://gitlab.com/owner/repo[/-/tree/branch[/path...]]
-  m=url.match(/gitlab\.com\/([^\/]+)\/([^\/\s?#]+)(?:\/-\/tree\/([^?#\s]+))?/);
-  if(m) {
-    const branch=m[3]?m[3].split('/')[0]||null:null;
-    return {platform:'gitlab',owner:m[1],repo:m[2].replace(/\.git$/,''),branch};
+  // GitLab (gitlab.com or any self-hosted instance)
+  // URL format: https://host/project/path[/-/tree/branch[/path...]]
+  const glm=url.match(/^https?:\/\/([^\/]+)\/(.+)$/);
+  if(glm) {
+    const host=glm[1];
+    const rest=glm[2].replace(/[?#].*$/,'').replace(/\/$/,''); // strip query/hash/trailing slash
+    let projectPath, branch=null;
+    const treeMarker=rest.indexOf('/-/tree/');
+    if(treeMarker!==-1) {
+      projectPath=rest.slice(0,treeMarker).replace(/\.git$/,'');
+      const branchAndPath=rest.slice(treeMarker+8);
+      branch=branchAndPath.split('/')[0]||null;
+    } else {
+      projectPath=rest.replace(/\.git$/,'');
+    }
+    return {platform:'gitlab',host,projectPath,branch};
   }
   return null;
 }
@@ -1499,11 +1507,12 @@ async function loadAutosRepo() {
   if(!url){st.className='autos-status err';st.textContent='✗ Enter a GitHub or GitLab repo URL';return;}
   const parsed=parseRepo(url);
   if(!parsed){st.className='autos-status err';st.textContent='✗ Invalid GitHub or GitLab URL';return;}
-  const {platform,owner,repo}=parsed;
+  const {platform}=parsed;
   st.className='autos-status checking';st.textContent='// Connecting...';
   try {
     let apiBase, branch;
     if(platform==='github') {
+      const {owner,repo}=parsed;
       apiBase=`https://api.github.com/repos/${owner}/${repo}`;
       if(parsed.branch) {
         branch=parsed.branch;
@@ -1513,14 +1522,15 @@ async function loadAutosRepo() {
       }
       autosRawBase=`https://raw.githubusercontent.com/${owner}/${repo}/${branch}`;
     } else {
-      apiBase=`https://gitlab.com/api/v4/projects/${encodeURIComponent(owner+'/'+repo)}`;
+      const {host,projectPath}=parsed;
+      apiBase=`https://${host}/api/v4/projects/${encodeURIComponent(projectPath)}`;
       if(parsed.branch) {
         branch=parsed.branch;
       } else {
         const info=await fetch(apiBase).then(r=>{if(!r.ok)throw new Error(`Repo not found (${r.status})`);return r.json();});
         branch=info.default_branch||'main';
       }
-      autosRawBase=`https://gitlab.com/${owner}/${repo}/-/raw/${branch}`;
+      autosRawBase=`https://${host}/${projectPath}/-/raw/${branch}`;
     }
     const autosPath='src/main/deploy/pathplanner/autos';
     const fileNames=await fetchDirListing(platform,apiBase,autosPath,branch);
@@ -1533,8 +1543,9 @@ async function loadAutosRepo() {
     }));
     autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
     pathsCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
+    const displayName=platform==='github'?`${parsed.owner}/${parsed.repo}`:parsed.projectPath;
     st.className='autos-status ok';
-    st.textContent=`✓ ${autos.length} autos from ${owner}/${repo}`;
+    st.textContent=`✓ ${autos.length} autos from ${displayName}`;
     renderAutosList(); updateAutosTime(); drawField();
     db.collection('config').doc('settings').set({autosRepo:url},{merge:true}).catch(()=>{});
   } catch(e) {
