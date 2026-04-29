@@ -1467,12 +1467,26 @@ const FIELD_W=16.541, FIELD_H=8.069;
 let autosRawBase='', autosList=[], pathsCache={}, selectedAutoIdx=-1;
 let autosSource='autos';
 let pathsList=[], choreoList=[], choreoCache={}, choreoPathBase='';
+let autosPlatform='', autosApiBase='', autosBranch='';
+let autosPathsDir='', autosChoreoDir='';
 let autosToken=localStorage.getItem('autosToken')||'';
 let autosHeaders={};
 
 function saveAutosToken(v){
   autosToken=v;
   v?localStorage.setItem('autosToken',v):localStorage.removeItem('autosToken');
+}
+
+// Use GitLab file API for self-hosted instances (avoids CORS on /-/raw/ URLs)
+async function fetchRepoFile(filePath) {
+  if(autosPlatform==='gitlab') {
+    const r=await fetch(`${autosApiBase}/repository/files/${encodeURIComponent(filePath)}/raw?ref=${encodeURIComponent(autosBranch)}`,{headers:autosHeaders});
+    if(!r.ok) throw new Error(r.status);
+    return r.text();
+  }
+  const r=await fetch(`${autosRawBase}/${filePath}`,{headers:autosHeaders});
+  if(!r.ok) throw new Error(r.status);
+  return r.text();
 }
 let currentTrajectory=null, autosTotalTime=0;
 let autosCanvas=null, autosCtx=null, autosFieldImg=null;
@@ -1566,6 +1580,7 @@ async function loadAutosRepo() {
       branch=parsed.branch||proj.default_branch||'main';
       autosRawBase=`https://${host}/${projectPath}/-/raw/${branch}`;
     }
+    autosPlatform=platform; autosApiBase=apiBase; autosBranch=branch;
     // Discover autos directory — try common WPILib project layouts
     let autosPath=null, autoFiles=[];
     for(const ap of ['src/main/deploy/pathplanner/autos','deploy/pathplanner/autos']) {
@@ -1579,7 +1594,7 @@ async function loadAutosRepo() {
     if(autosPath&&autoFiles.length) {
       st.textContent=`// Loading ${autoFiles.length} autos...`;
       const loaded=await Promise.allSettled(autoFiles.map(async name=>{
-        const raw=await fetch(`${autosRawBase}/${autosPath}/${encodeURIComponent(name)}`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+        const raw=await fetchRepoFile(`${autosPath}/${name}`);
         return {name:name.replace('.auto',''),data:JSON.parse(raw)};
       }));
       loaded.forEach(r=>{if(r.status==='fulfilled')autos.push(r.value);});
@@ -1587,6 +1602,7 @@ async function loadAutosRepo() {
     autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
     pathsCache={}; choreoCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
     pathsList=[]; choreoList=[]; choreoPathBase='';
+    autosPathsDir=''; autosChoreoDir='';
     autosSource='autos';
     ['autos','paths','choreo'].forEach(s=>{
       const b=document.getElementById('srcBtn'+s[0].toUpperCase()+s.slice(1));
@@ -1599,6 +1615,7 @@ async function loadAutosRepo() {
         const pf=await fetchDirListing(platform,apiBase,pp,branch,autosHeaders);
         const found=pf.filter(n=>n.endsWith('.path'));
         if(found.length){
+          autosPathsDir=pp;
           pathsList=found.map(n=>({name:n.replace('.path','')})).sort((a,b)=>a.name.localeCompare(b.name));
           break;
         }
@@ -1611,6 +1628,7 @@ async function loadAutosRepo() {
         const cf=await fetchDirListing(platform,apiBase,cp,branch,autosHeaders);
         const trajFiles=cf.filter(n=>n.endsWith('.traj'));
         if(trajFiles.length) {
+          autosChoreoDir=cp;
           choreoList=trajFiles.map(n=>({name:n.replace('.traj','')})).sort((a,b)=>a.name.localeCompare(b.name));
           choreoPathBase=`${autosRawBase}/${cp}`;
           break;
@@ -1724,7 +1742,7 @@ async function selectPath(idx) {
   const n=path.name;
   if(!pathsCache[n]) {
     try {
-      const raw=await fetch(`${autosRawBase}/src/main/deploy/pathplanner/paths/${encodeURIComponent(n)}.path`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      const raw=await fetchRepoFile(`${autosPathsDir||'src/main/deploy/pathplanner/paths'}/${n}.path`);
       pathsCache[n]=JSON.parse(raw);
     } catch(e) {
       st.className='autos-status err'; st.textContent=`✗ Failed to load path: ${e.message}`;
@@ -1752,7 +1770,7 @@ async function selectChoreo(idx) {
   const n=path.name;
   if(!choreoCache[n]) {
     try {
-      const raw=await fetch(`${choreoPathBase}/${encodeURIComponent(n)}.traj`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      const raw=await fetchRepoFile(`${autosChoreoDir}/${n}.traj`);
       choreoCache[n]=JSON.parse(raw);
     } catch(e) {
       st.className='autos-status err'; st.textContent=`✗ Failed to load trajectory: ${e.message}`;
@@ -1783,10 +1801,10 @@ async function selectAuto(idx) {
     st.className='autos-status err';st.textContent='⚠ No paths found in this auto';
     currentTrajectory=null;autosTotalTime=0;updateAutosTime();drawField();return;
   }
-  const pathsDir='src/main/deploy/pathplanner/paths';
+  const pathsDir=autosPathsDir||'src/main/deploy/pathplanner/paths';
   await Promise.all(pathNames.filter(n=>!pathsCache[n]).map(async n=>{
     try {
-      const raw=await fetch(`${autosRawBase}/${pathsDir}/${encodeURIComponent(n)}.path`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      const raw=await fetchRepoFile(`${pathsDir}/${n}.path`);
       pathsCache[n]=JSON.parse(raw);
     } catch(e){console.warn('Path load failed:',n,e.message);}
   }));
