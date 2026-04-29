@@ -177,6 +177,23 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
 .scout-filter-inp:focus{outline:none;border-color:var(--accent)}
 .scout-filter-inp::placeholder{color:var(--muted)}
 
+/* ── AUTOS TAB ── */
+.autos-repo-bar{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.autos-repo-inp{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:7px 10px;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:11px;flex:1;min-width:180px}
+.autos-repo-inp:focus{outline:none;border-color:var(--accent)}.autos-repo-inp::placeholder{color:var(--muted)}
+.autos-status{font-family:'Share Tech Mono',monospace;font-size:10px;min-height:14px;letter-spacing:.5px;padding:1px 0}
+.autos-status.ok{color:var(--success)}.autos-status.err{color:var(--danger)}.autos-status.checking{color:var(--accent);animation:blink .7s infinite}
+.autos-body{display:flex;gap:10px;height:340px;align-items:stretch}
+.autos-list{display:flex;flex-direction:column;gap:2px;width:165px;flex-shrink:0;overflow-y:auto;background:var(--panel);border:0.5px solid var(--border);border-radius:8px;padding:6px}
+.autos-folder{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:1px;padding:6px 6px 3px;border-bottom:0.5px solid var(--border);margin-bottom:2px}
+.autos-item{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--txt);padding:5px 8px;border-radius:5px;cursor:pointer;transition:all .12s;border:0.5px solid transparent;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.autos-item:hover{background:rgba(197,180,227,.1);border-color:var(--border)}.autos-item.sel{background:rgba(60,0,100,.4);border-color:var(--accent);color:var(--accent)}
+.autos-empty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);padding:10px;text-align:center;opacity:.6;line-height:1.6}
+.autos-canvas-wrap{flex:1;min-width:0;background:#0a0f18;border:0.5px solid var(--border);border-radius:8px;overflow:hidden}
+.autos-canvas-wrap canvas{display:block;width:100%;height:100%}
+.autos-ctrl-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.autos-speed-sel{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23c7c9c7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+
 .foot{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);text-align:center;margin-top:8px;opacity:.4;letter-spacing:1px}
 .sync-bar{background:rgba(197,180,227,.07);border:0.5px solid var(--accent);border-radius:8px;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .sync-bar-txt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.5px}
@@ -271,6 +288,7 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
     <div class="tab-nav" id="tabNav">
       <button class="tab-btn active" id="tabTrackerBtn" onclick="switchTab('tracker')">&#9654; TRACKER</button>
       <button class="tab-btn" id="tabScoutBtn" onclick="switchTab('scout')">&#128203; SCOUT</button>
+      <button class="tab-btn" id="tabAutosBtn" onclick="switchTab('autos')">&#9650; AUTOS</button>
     </div>
 
     <!-- SCOUT TAB -->
@@ -369,6 +387,34 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
       </div>
     </div>
     </div><!-- /trackerTab -->
+
+    <!-- AUTOS TAB -->
+    <div id="autosTab" style="display:none">
+      <div class="autos-repo-bar">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;white-space:nowrap">GITHUB REPO</span>
+        <input class="autos-repo-inp" id="autosRepoInp" placeholder="https://github.com/team/robot-repo" onkeydown="if(event.key==='Enter')loadAutosRepo()"/>
+        <button class="key-btn" onclick="loadAutosRepo()">LOAD</button>
+      </div>
+      <div class="autos-status" id="autosStatus"></div>
+      <div class="autos-body">
+        <div class="autos-list" id="autosListEl"><div class="autos-empty">// No repo loaded</div></div>
+        <div class="autos-canvas-wrap" id="autosCanvasWrap"><canvas id="autosCanvas"></canvas></div>
+      </div>
+      <div class="autos-ctrl-bar">
+        <button class="ctrl-btn" onclick="autosReset()" style="width:28px;height:28px;font-size:11px" title="Reset">&#9632;</button>
+        <button class="ctrl-btn play-btn" id="autosPlayBtn" onclick="autosTogglePlay()">&#9654;</button>
+        <div class="prog-bar" id="autosProgBar" style="flex:1;min-width:60px" onclick="autosScrub(event)">
+          <div class="prog-fill" id="autosProgFill" style="width:0%"></div>
+        </div>
+        <div class="time-disp" id="autosTimeDisp" style="min-width:80px">0.00s / 0.00s</div>
+        <select class="autos-speed-sel" onchange="setAutosSpeed(this.value)">
+          <option value="0.25">0.25×</option>
+          <option value="0.5">0.5×</option>
+          <option value="1" selected>1×</option>
+          <option value="2">2×</option>
+        </select>
+      </div>
+    </div><!-- /autosTab -->
   </div>
 
   <div class="foot" id="foot" style="display:none">DATA: THE BLUE ALLIANCE · VIDEOS: FIRST 40s · OFFSETS: SHARED VIA FIRESTORE</div>
@@ -1172,20 +1218,24 @@ window.addEventListener('message', evt => {
 });
 // ── TAB SWITCHING ─────────────────────────────────────────────────────
 function switchTab(tab) {
-  const isScout = tab === 'scout';
-  document.getElementById('scoutTab').style.display = isScout ? 'flex' : 'none';
-  document.getElementById('scoutTab').style.flexDirection = 'column';
-  document.getElementById('scoutTab').style.gap = '10px';
-  document.getElementById('trackerTab').style.display = isScout ? 'none' : 'block';
-  document.getElementById('tabTrackerBtn').className = isScout ? 'tab-btn' : 'tab-btn active';
-  document.getElementById('tabScoutBtn').className = isScout ? 'tab-btn active' : 'tab-btn';
-  // Hide tracker-only header buttons when on scout tab
-  ['allianceBtn','compactBtn','syncBtn','addBtn'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.style.display = isScout ? 'none' : 'block';
+  ['tracker','scout','autos'].forEach(t=>{
+    const el=document.getElementById(t+'Tab'); if(el) el.style.display='none';
+    const btn=document.getElementById('tab'+t[0].toUpperCase()+t.slice(1)+'Btn');
+    if(btn) btn.className='tab-btn';
   });
-  if(!isScout) renderAll(); // refresh tracker
-  else renderEntries();
+  const el=document.getElementById(tab+'Tab');
+  if(el){
+    if(tab==='tracker') el.style.display='block';
+    else{el.style.display='flex';el.style.flexDirection='column';el.style.gap='10px';}
+  }
+  const btn=document.getElementById('tab'+tab[0].toUpperCase()+tab.slice(1)+'Btn');
+  if(btn) btn.className='tab-btn active';
+  ['allianceBtn','compactBtn','syncBtn','addBtn'].forEach(id=>{
+    const b=document.getElementById(id); if(b) b.style.display=tab==='tracker'?'block':'none';
+  });
+  if(tab==='tracker') renderAll();
+  else if(tab==='scout') renderEntries();
+  else if(tab==='autos') onShowAutosTab();
 }
 
 // ── SCOUT STATE ────────────────────────────────────────────────────────
@@ -1400,6 +1450,379 @@ async function saveCardNote(entryId, robotId) {
     await db.collection('scout_entries').doc(entryId).update({text: newText});
     // onSnapshot refreshes scoutEntries, then updateCard re-renders
   } catch(e2) { alert('Save failed: '+e2.message); }
+}
+
+// ── AUTOS TAB ─────────────────────────────────────────────────────────
+const FIELD_IMG_W=4188, FIELD_IMG_H=2032;
+const FIELD_IMG_TL=[245,118], FIELD_IMG_BR=[3942,1914];
+const FIELD_W=16.541, FIELD_H=8.069;
+
+let autosRawBase='', autosList=[], pathsCache={}, selectedAutoIdx=-1;
+let currentTrajectory=null, autosTotalTime=0;
+let autosCanvas=null, autosCtx=null, autosFieldImg=null;
+let autosPlaying=false, autosT=0, autosLastTs=null, autosRafId=null, autosSpeed=1.0;
+
+function parseGHRepo(url) {
+  const m=url.match(/github\.com\/([^\/]+)\/([^\/\s?#]+)/);
+  return m?{owner:m[1],repo:m[2].replace(/\.git$/,'')}:null;
+}
+
+async function loadAutosRepo() {
+  const inp=document.getElementById('autosRepoInp');
+  const st=document.getElementById('autosStatus');
+  const url=inp.value.trim();
+  if(!url){st.className='autos-status err';st.textContent='✗ Enter a GitHub repo URL';return;}
+  const gh=parseGHRepo(url);
+  if(!gh){st.className='autos-status err';st.textContent='✗ Invalid GitHub URL';return;}
+  st.className='autos-status checking';st.textContent='// Connecting...';
+  try {
+    const apiBase=`https://api.github.com/repos/${gh.owner}/${gh.repo}`;
+    const info=await fetch(apiBase).then(r=>{if(!r.ok)throw new Error(`Repo not found (${r.status})`);return r.json();});
+    const branch=info.default_branch||'main';
+    autosRawBase=`https://raw.githubusercontent.com/${gh.owner}/${gh.repo}/${branch}`;
+    const autosApiPath='src/main/deploy/pathplanner/autos';
+    const dir=await fetch(`${apiBase}/contents/${autosApiPath}`)
+      .then(r=>{if(!r.ok)throw new Error('pathplanner/autos not found — check repo structure');return r.json();});
+    if(!Array.isArray(dir)) throw new Error('Unexpected GitHub API response');
+    const files=dir.filter(f=>f.name.endsWith('.auto'));
+    if(!files.length) throw new Error('No .auto files found');
+    st.textContent=`// Loading ${files.length} autos...`;
+    const autos=await Promise.all(files.map(async f=>{
+      const raw=await fetch(`${autosRawBase}/${autosApiPath}/${encodeURIComponent(f.name)}`).then(r=>r.text());
+      return {name:f.name.replace('.auto',''),data:JSON.parse(raw)};
+    }));
+    autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
+    pathsCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
+    st.className='autos-status ok';
+    st.textContent=`✓ ${autos.length} autos from ${gh.owner}/${gh.repo}`;
+    renderAutosList(); updateAutosTime(); drawField();
+    db.collection('config').doc('settings').set({autosRepo:url},{merge:true}).catch(()=>{});
+  } catch(e) {
+    st.className='autos-status err';st.textContent='✗ '+e.message;
+  }
+}
+
+async function loadAutosSettings() {
+  try {
+    const doc=await db.collection('config').doc('settings').get();
+    if(doc.exists&&doc.data().autosRepo) {
+      const inp=document.getElementById('autosRepoInp');
+      if(inp&&!inp.value) inp.value=doc.data().autosRepo;
+    }
+  } catch(e){}
+}
+
+function renderAutosList() {
+  const list=document.getElementById('autosListEl'); if(!list) return;
+  if(!autosList.length){list.innerHTML='<div class="autos-empty">// No autos loaded</div>';return;}
+  const groups={};
+  autosList.forEach((a,i)=>{const f=a.data?.folder||'';if(!groups[f])groups[f]=[];groups[f].push({...a,idx:i});});
+  let html='';
+  (groups['']||[]).forEach(a=>{
+    html+=`<div class="autos-item${selectedAutoIdx===a.idx?' sel':''}" role="button" tabindex="0" onclick="selectAuto(${a.idx})" onkeydown="if(event.key==='Enter')selectAuto(${a.idx})" title="${escHtml(a.name)}">${escHtml(a.name)}</div>`;
+  });
+  Object.entries(groups).filter(([f])=>f).forEach(([folder,items])=>{
+    html+=`<div class="autos-folder">${escHtml(folder)}</div>`;
+    items.forEach(a=>{
+      html+=`<div class="autos-item${selectedAutoIdx===a.idx?' sel':''}" role="button" tabindex="0" onclick="selectAuto(${a.idx})" onkeydown="if(event.key==='Enter')selectAuto(${a.idx})" title="${escHtml(a.name)}">${escHtml(a.name)}</div>`;
+    });
+  });
+  list.innerHTML=html;
+}
+
+function collectPaths(cmd) {
+  if(!cmd) return [];
+  if(cmd.type==='path'&&cmd.data?.pathName) return [cmd.data.pathName];
+  return (cmd.data?.commands||[]).flatMap(c=>collectPaths(c));
+}
+
+async function selectAuto(idx) {
+  selectedAutoIdx=idx; renderAutosList();
+  autosStopPlay(); autosT=0;
+  const auto=autosList[idx]; if(!auto) return;
+  const st=document.getElementById('autosStatus');
+  st.className='autos-status checking';st.textContent=`// Building "${auto.name}"...`;
+  const pathNames=collectPaths(auto.data?.command);
+  if(!pathNames.length){
+    st.className='autos-status err';st.textContent='⚠ No paths found in this auto';
+    currentTrajectory=null;autosTotalTime=0;updateAutosTime();drawField();return;
+  }
+  const pathsDir='src/main/deploy/pathplanner/paths';
+  await Promise.all(pathNames.filter(n=>!pathsCache[n]).map(async n=>{
+    try {
+      const raw=await fetch(`${autosRawBase}/${pathsDir}/${encodeURIComponent(n)}.path`).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      pathsCache[n]=JSON.parse(raw);
+    } catch(e){console.warn('Path load failed:',n,e.message);}
+  }));
+  let allStates=[],tOff=0;
+  for(const name of pathNames) {
+    const pd=pathsCache[name]; if(!pd) continue;
+    const seg=buildTrajectory(pd);
+    seg.forEach(s=>{s.t+=tOff;});
+    if(seg.length) tOff=seg[seg.length-1].t;
+    allStates.push(...seg);
+  }
+  currentTrajectory=allStates;
+  autosTotalTime=allStates.length?allStates[allStates.length-1].t:0;
+  updateAutosTime(); drawField();
+  const loaded=pathNames.filter(n=>pathsCache[n]).length;
+  st.className='autos-status ok';
+  st.textContent=`✓ ${loaded}/${pathNames.length} path(s) · ${autosTotalTime.toFixed(2)}s`;
+}
+
+// ── TRAJECTORY GENERATION ─────────────────────────────────────────────
+
+function buildTrajectory(pd) {
+  const wps=pd.waypoints;
+  if(!wps||wps.length<2) return [];
+  const gc=pd.globalConstraints||{};
+  const dMaxV=gc.maxVelocity||3.0, dMaxA=gc.maxAcceleration||3.0;
+  const initV=pd.idealStartingState?.velocity||0;
+  const endV=pd.goalEndState?.velocity||0;
+  const numSeg=wps.length-1;
+
+  // Dense bezier sample (100 pts/segment)
+  const dense=[];
+  for(let si=0;si<numSeg;si++) {
+    const a0=wps[si].anchor, c1=wps[si].nextControl||wps[si].anchor;
+    const c2=wps[si+1].prevControl||wps[si+1].anchor, a1=wps[si+1].anchor;
+    for(let j=(si===0?0:1);j<=100;j++) {
+      const t=j/100,mt=1-t;
+      dense.push({
+        x:mt*mt*mt*a0.x+3*mt*mt*t*c1.x+3*mt*t*t*c2.x+t*t*t*a1.x,
+        y:mt*mt*mt*a0.y+3*mt*mt*t*c1.y+3*mt*t*t*c2.y+t*t*t*a1.y,
+        wp:si+t
+      });
+    }
+  }
+
+  // Resample at 0.2m spacing
+  const pts=[{...dense[0]}];
+  let acc=0,lastS=0;
+  for(let i=1;i<dense.length;i++) {
+    const dx=dense[i].x-dense[i-1].x,dy=dense[i].y-dense[i-1].y;
+    const d=Math.hypot(dx,dy); if(d<1e-9) continue;
+    acc+=d;
+    while(acc-lastS>=0.2) {
+      const td=lastS+0.2,f=(td-(acc-d))/d;
+      pts.push({x:dense[i-1].x+dx*f,y:dense[i-1].y+dy*f,wp:dense[i-1].wp+(dense[i].wp-dense[i-1].wp)*f});
+      lastS=td;
+    }
+  }
+  pts.push({...dense[dense.length-1]});
+  if(pts.length<2) return [];
+
+  // Holonomic rotation at each point
+  const sRot=(pd.idealStartingState?.rotation??0)*Math.PI/180;
+  const eRot=(pd.goalEndState?.rotation??0)*Math.PI/180;
+  const rps=[[0,sRot]];
+  (pd.rotationTargets||[]).forEach(rt=>rps.push([rt.waypointRelativePos,rt.rotationDegrees*Math.PI/180]));
+  rps.push([numSeg,eRot]);
+  rps.sort((a,b)=>a[0]-b[0]);
+  pts.forEach(p=>{p.rot=interpAngle(rps,p.wp);});
+
+  // Constraints per point (check zones)
+  const czones=pd.constraintZones||[];
+  pts.forEach(p=>{
+    let mv=dMaxV,ma=dMaxA;
+    for(const z of czones) {
+      if(p.wp>=z.minWaypointRelativePos&&p.wp<=z.maxWaypointRelativePos){
+        mv=z.constraints?.maxVelocity||mv;ma=z.constraints?.maxAcceleration||ma;break;
+      }
+    }
+    p.maxV=mv;p.maxA=ma;
+  });
+
+  // Distances
+  const dists=[];
+  for(let i=1;i<pts.length;i++) dists.push(Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y));
+
+  // Forward pass
+  const vels=new Array(pts.length).fill(0);
+  vels[0]=initV;
+  for(let i=1;i<pts.length;i++) {
+    vels[i]=Math.min(pts[i].maxV,Math.sqrt(vels[i-1]*vels[i-1]+2*pts[i].maxA*dists[i-1]));
+  }
+
+  // Backward pass
+  vels[pts.length-1]=Math.min(vels[pts.length-1],Math.max(endV,0.01));
+  for(let i=pts.length-2;i>=0;i--) {
+    const v=Math.sqrt(vels[i+1]*vels[i+1]+2*pts[i+1].maxA*dists[i]);
+    vels[i]=Math.min(vels[i],Math.max(v,0.01));
+  }
+
+  // Timestamp
+  const states=[{x:pts[0].x,y:pts[0].y,rot:pts[0].rot,t:0,v:vels[0]}];
+  let t=0;
+  for(let i=1;i<pts.length;i++) {
+    t+=dists[i-1]/Math.max((vels[i-1]+vels[i])/2,0.01);
+    states.push({x:pts[i].x,y:pts[i].y,rot:pts[i].rot,t,v:vels[i]});
+  }
+  return states;
+}
+
+function interpAngle(pts,pos) {
+  if(!pts.length) return 0;
+  if(pos<=pts[0][0]) return pts[0][1];
+  if(pos>=pts[pts.length-1][0]) return pts[pts.length-1][1];
+  for(let i=1;i<pts.length;i++) {
+    if(pos<=pts[i][0]) {
+      const f=(pos-pts[i-1][0])/(pts[i][0]-pts[i-1][0]);
+      let da=pts[i][1]-pts[i-1][1];
+      while(da>Math.PI)da-=2*Math.PI;while(da<-Math.PI)da+=2*Math.PI;
+      return pts[i-1][1]+da*f;
+    }
+  }
+  return pts[pts.length-1][1];
+}
+
+// ── FIELD RENDERING ───────────────────────────────────────────────────
+
+function fToC(fx,fy) {
+  if(!autosCanvas) return {cx:0,cy:0};
+  const iw=autosFieldImg?.naturalWidth||FIELD_IMG_W, ih=autosFieldImg?.naturalHeight||FIELD_IMG_H;
+  const fw=FIELD_IMG_BR[0]-FIELD_IMG_TL[0], fh=FIELD_IMG_BR[1]-FIELD_IMG_TL[1];
+  return {
+    cx:((FIELD_IMG_TL[0]+(fx/FIELD_W)*fw)/iw)*autosCanvas.width,
+    cy:((FIELD_IMG_TL[1]+(1-fy/FIELD_H)*fh)/ih)*autosCanvas.height
+  };
+}
+
+function mToPx(m) {
+  const iw=autosFieldImg?.naturalWidth||FIELD_IMG_W;
+  return m*((FIELD_IMG_BR[0]-FIELD_IMG_TL[0])*(autosCanvas.width/iw))/FIELD_W;
+}
+
+function initAutosCanvas() {
+  autosCanvas=document.getElementById('autosCanvas'); if(!autosCanvas) return;
+  autosCtx=autosCanvas.getContext('2d');
+  const wrap=document.getElementById('autosCanvasWrap');
+  autosCanvas.width=Math.max(wrap?.clientWidth||600,200);
+  autosCanvas.height=Math.max(wrap?.clientHeight||300,100);
+  drawField();
+  autosFieldImg=new Image();
+  autosFieldImg.crossOrigin='anonymous';
+  autosFieldImg.onload=()=>drawField();
+  autosFieldImg.onerror=()=>{autosFieldImg=null;drawField();};
+  autosFieldImg.src='https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/fieldImages/src/main/native/resources/edu/wpi/first/fields/2026-field.png';
+}
+
+function drawField() {
+  const ctx=autosCtx,cv=autosCanvas; if(!ctx||!cv) return;
+  ctx.fillStyle='#0a0f18';ctx.fillRect(0,0,cv.width,cv.height);
+  if(autosFieldImg?.complete&&autosFieldImg.naturalWidth>0) {
+    ctx.drawImage(autosFieldImg,0,0,cv.width,cv.height);
+  } else {
+    const tl=fToC(0,FIELD_H),br=fToC(FIELD_W,0);
+    ctx.fillStyle='#151e2e';ctx.fillRect(tl.cx,tl.cy,br.cx-tl.cx,br.cy-tl.cy);
+    ctx.strokeStyle='#3c0064';ctx.lineWidth=2;ctx.strokeRect(tl.cx,tl.cy,br.cx-tl.cx,br.cy-tl.cy);
+    ctx.fillStyle='#3c0064';ctx.font='12px Share Tech Mono,monospace';ctx.textAlign='center';
+    ctx.fillText('2026 field image loading...',cv.width/2,cv.height/2);
+  }
+  if(!currentTrajectory||currentTrajectory.length<2) return;
+  drawPath(ctx);
+  const state=interpTraj(autosT); if(state) drawRobot(ctx,state.x,state.y,state.rot);
+}
+
+function drawPath(ctx) {
+  const tr=currentTrajectory;
+  const maxV=Math.max(...tr.map(s=>s.v),0.1);
+  for(let i=1;i<tr.length;i++) {
+    const s0=tr[i-1],s1=tr[i];
+    const p0=fToC(s0.x,s0.y),p1=fToC(s1.x,s1.y);
+    const f=Math.min((s0.v||0)/maxV,1);
+    // Purple (slow) → green (fast)
+    ctx.strokeStyle=`rgb(${Math.round(197-181*f)},${Math.round(180+5*f)},${Math.round(227-98*f)})`;
+    ctx.lineWidth=2.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(p0.cx,p0.cy);ctx.lineTo(p1.cx,p1.cy);ctx.stroke();
+  }
+  const sp=fToC(tr[0].x,tr[0].y);
+  ctx.fillStyle='#10b981';ctx.beginPath();ctx.arc(sp.cx,sp.cy,5,0,Math.PI*2);ctx.fill();
+  const ep=fToC(tr[tr.length-1].x,tr[tr.length-1].y);
+  ctx.fillStyle='#ef4444';ctx.beginPath();ctx.arc(ep.cx,ep.cy,5,0,Math.PI*2);ctx.fill();
+}
+
+function drawRobot(ctx,x,y,rot) {
+  const pos=fToC(x,y),rw=mToPx(0.9),rh=mToPx(0.9);
+  ctx.save();
+  ctx.translate(pos.cx,pos.cy);
+  ctx.rotate(-rot); // field CCW → canvas CW (Y-flip)
+  ctx.fillStyle='rgba(197,180,227,0.92)';ctx.strokeStyle='#fff';ctx.lineWidth=1.5;
+  ctx.fillRect(-rw/2,-rh/2,rw,rh);ctx.strokeRect(-rw/2,-rh/2,rw,rh);
+  ctx.fillStyle='#3c0064';ctx.fillRect(rw/2-rw*0.2,-rh/2,rw*0.2,rh); // front stripe (+X)
+  ctx.restore();
+}
+
+function interpTraj(t) {
+  const tr=currentTrajectory; if(!tr||!tr.length) return null;
+  if(t<=tr[0].t) return tr[0];
+  if(t>=tr[tr.length-1].t) return tr[tr.length-1];
+  let lo=0,hi=tr.length-1;
+  while(hi-lo>1){const m=(lo+hi)>>1;tr[m].t<=t?lo=m:hi=m;}
+  const s0=tr[lo],s1=tr[hi],f=(t-s0.t)/(s1.t-s0.t);
+  let dr=s1.rot-s0.rot;
+  while(dr>Math.PI)dr-=2*Math.PI;while(dr<-Math.PI)dr+=2*Math.PI;
+  return {x:s0.x+(s1.x-s0.x)*f,y:s0.y+(s1.y-s0.y)*f,rot:s0.rot+dr*f,v:s0.v+(s1.v-s0.v)*f};
+}
+
+// ── PLAYBACK ──────────────────────────────────────────────────────────
+
+function autosTogglePlay(){autosPlaying?autosStopPlay():autosStartPlay();}
+
+function autosStartPlay() {
+  if(!currentTrajectory||!currentTrajectory.length) return;
+  if(autosT>=autosTotalTime) autosT=0;
+  autosPlaying=true;autosLastTs=performance.now();updateAutosPlayBtn();
+  const tick=ts=>{
+    if(!autosPlaying) return;
+    autosT=Math.min(autosT+(ts-autosLastTs)/1000*autosSpeed,autosTotalTime);
+    autosLastTs=ts;updateAutosTime();drawField();
+    if(autosT>=autosTotalTime){autosPlaying=false;updateAutosPlayBtn();return;}
+    autosRafId=requestAnimationFrame(tick);
+  };
+  autosRafId=requestAnimationFrame(tick);
+}
+
+function autosStopPlay() {
+  autosPlaying=false;if(autosRafId){cancelAnimationFrame(autosRafId);autosRafId=null;}
+  updateAutosPlayBtn();
+}
+
+function autosReset(){autosStopPlay();autosT=0;updateAutosTime();drawField();}
+
+function updateAutosPlayBtn() {
+  const btn=document.getElementById('autosPlayBtn'); if(!btn) return;
+  btn.innerHTML=autosPlaying?'&#9646;&#9646;':'&#9654;';
+  btn.className='ctrl-btn play-btn'+(autosPlaying?' playing':'');
+}
+
+function updateAutosTime() {
+  const el=document.getElementById('autosTimeDisp');
+  if(el) el.textContent=autosT.toFixed(2)+'s / '+autosTotalTime.toFixed(2)+'s';
+  const bar=document.getElementById('autosProgFill');
+  if(bar) bar.style.width=(autosTotalTime>0?Math.min(autosT/autosTotalTime*100,100).toFixed(1):0)+'%';
+}
+
+function autosScrub(e) {
+  if(!currentTrajectory) return;
+  const rect=e.currentTarget.getBoundingClientRect();
+  autosT=Math.max(0,Math.min(autosTotalTime,(e.clientX-rect.left)/rect.width*autosTotalTime));
+  updateAutosTime();drawField();
+}
+
+function setAutosSpeed(v){autosSpeed=parseFloat(v);}
+
+function onShowAutosTab() {
+  if(!autosCanvas) {
+    setTimeout(()=>{initAutosCanvas();loadAutosSettings();},60);
+  } else {
+    const wrap=document.getElementById('autosCanvasWrap');
+    if(wrap&&autosCanvas.width!==wrap.clientWidth) {
+      autosCanvas.width=Math.max(wrap.clientWidth,200);
+      autosCanvas.height=Math.max(wrap.clientHeight,100);
+    }
+    drawField();
+  }
 }
 
 </script>

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebSearch",
+      "WebFetch(domain:pathplanner.dev)",
+      "WebFetch(domain:docs.wpilib.org)",
+      "Bash(curl -s https://api.github.com/repos/mjansen4857/pathplanner/contents/assets/fields)",
+      "Bash(curl -s \"https://api.github.com/repos/mjansen4857/pathplanner/contents/assets/fields\")",
+      "Bash(curl -s \"https://api.github.com/repos/mjansen4857/pathplanner\")",
+      "Bash(curl -s \"https://api.github.com/repos/mjansen4857/pathplanner/git/trees/main?recursive=1\")",
+      "Bash(curl -s \"https://api.github.com/repos/mjansen4857/pathplanner/contents/pathplanner_app/assets\")",
+      "Bash(curl -s \"https://api.github.com/repos/mjansen4857/pathplanner/contents/pathplanner_app\")",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s \"https://api.github.com/repos/mjansen4857/pathplanner/contents/pathplanner_app/resources\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/mjansen4857/pathplanner/main/README.md\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/mjansen4857/pathplanner/main/pathplanner_app/resources/field26.json\")",
+      "Bash(curl -s \"https://api.github.com/repos/wpilibsuite/allwpilib/contents/fieldImages/src/main/native/resources/edu/wpi/first/fields\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/fieldImages/src/main/native/resources/edu/wpi/first/fields/2026-rebuilt.json\")",
+      "Bash(curl -s \"https://raw.githubusercontent.com/wpilibsuite/allwpilib/main/fieldImages/src/main/native/resources/edu/wpi/first/fields/2025-reefscape.json\")"
+    ]
+  }
+}
