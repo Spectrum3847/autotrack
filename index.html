@@ -190,6 +190,10 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
 .autos-item{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--txt);padding:4px 10px;border-radius:5px;cursor:pointer;transition:all .12s;border:0.5px solid var(--border);white-space:nowrap;background:var(--panel)}
 .autos-item:hover{border-color:var(--muted);color:var(--txt);background:rgba(197,180,227,.1)}.autos-item.sel{background:rgba(60,0,100,.4);border-color:var(--accent);color:var(--accent)}
 .autos-empty{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);padding:6px 2px;opacity:.6}
+.autos-src-bar{display:flex;gap:5px;padding:2px 0}
+.autos-src-btn{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.5px;padding:4px 10px;border-radius:5px;cursor:pointer;border:0.5px solid var(--border);background:var(--panel);color:var(--muted);transition:all .12s}
+.autos-src-btn.sel{background:rgba(60,0,100,.4);border-color:var(--accent);color:var(--accent)}
+.autos-src-btn:hover:not(.sel){border-color:var(--muted);color:var(--txt)}
 .autos-ctrl-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .autos-speed-sel{background:var(--panel);border:0.5px solid var(--border);color:var(--txt);padding:5px 20px 5px 7px;border-radius:5px;font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23c7c9c7'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 
@@ -396,6 +400,11 @@ textarea.sf-inp{resize:vertical;min-height:80px;font-family:'Rajdhani',sans-seri
         <button class="key-btn" onclick="loadAutosRepo()">LOAD</button>
       </div>
       <div class="autos-status" id="autosStatus"></div>
+      <div class="autos-src-bar" id="autosSrcBar" style="display:none">
+        <button class="autos-src-btn sel" id="srcBtnAutos" onclick="setAutosSource('autos')">AUTOS</button>
+        <button class="autos-src-btn" id="srcBtnPaths" onclick="setAutosSource('paths')">PATHS</button>
+        <button class="autos-src-btn" id="srcBtnChoreo" onclick="setAutosSource('choreo')">CHOREO</button>
+      </div>
       <div class="autos-canvas-wrap" id="autosCanvasWrap"><canvas id="autosCanvas"></canvas></div>
       <div class="autos-ctrl-bar">
         <button class="ctrl-btn" onclick="autosReset()" style="width:28px;height:28px;font-size:11px" title="Reset">&#9632;</button>
@@ -1456,6 +1465,8 @@ const FIELD_IMG_TL=[245,118], FIELD_IMG_BR=[3942,1914];
 const FIELD_W=16.541, FIELD_H=8.069;
 
 let autosRawBase='', autosList=[], pathsCache={}, selectedAutoIdx=-1;
+let autosSource='autos';
+let pathsList=[], choreoList=[], choreoCache={}, choreoPathBase='';
 let autosToken=localStorage.getItem('autosToken')||'';
 let autosHeaders={};
 
@@ -1565,10 +1576,42 @@ async function loadAutosRepo() {
       return {name:name.replace('.auto',''),data:JSON.parse(raw)};
     }));
     autosList=autos.sort((a,b)=>a.name.localeCompare(b.name));
-    pathsCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
+    pathsCache={}; choreoCache={}; selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
+    pathsList=[]; choreoList=[]; choreoPathBase='';
+    autosSource='autos';
+    ['autos','paths','choreo'].forEach(s=>{
+      const b=document.getElementById('srcBtn'+s[0].toUpperCase()+s.slice(1));
+      if(b) b.className='autos-src-btn'+(s==='autos'?' sel':'');
+    });
+
+    // Load individual paths listing
+    try {
+      const pf=await fetchDirListing(platform,apiBase,'src/main/deploy/pathplanner/paths',branch,autosHeaders);
+      pathsList=pf.filter(n=>n.endsWith('.path')).map(n=>({name:n.replace('.path','')})).sort((a,b)=>a.name.localeCompare(b.name));
+    } catch(e){}
+
+    // Load choreo listing — try both common directory locations
+    for(const cp of ['deploy/choreo','src/main/deploy/choreo']) {
+      try {
+        const cf=await fetchDirListing(platform,apiBase,cp,branch,autosHeaders);
+        const trajFiles=cf.filter(n=>n.endsWith('.traj'));
+        if(trajFiles.length) {
+          choreoList=trajFiles.map(n=>({name:n.replace('.traj','')})).sort((a,b)=>a.name.localeCompare(b.name));
+          choreoPathBase=`${autosRawBase}/${cp}`;
+          break;
+        }
+      } catch(e){}
+    }
+
+    const srcBar=document.getElementById('autosSrcBar');
+    if(srcBar) srcBar.style.display=(pathsList.length||choreoList.length)?'flex':'none';
+
     const displayName=platform==='github'?`${parsed.owner}/${parsed.repo}`:parsed.projectPath;
+    const parts=[`${autos.length} auto${autos.length!==1?'s':''}`];
+    if(pathsList.length) parts.push(`${pathsList.length} path${pathsList.length!==1?'s':''}`);
+    if(choreoList.length) parts.push(`${choreoList.length} choreo`);
     st.className='autos-status ok';
-    st.textContent=`✓ ${autos.length} autos from ${displayName}`;
+    st.textContent=`✓ ${parts.join(' · ')} from ${displayName}`;
     renderAutosList(); updateAutosTime(); drawField();
     db.collection('config').doc('settings').set({autosRepo:url},{merge:true}).catch(()=>{});
   } catch(e) {
@@ -1590,8 +1633,36 @@ async function loadAutosSettings() {
   } catch(e){}
 }
 
+function setAutosSource(src) {
+  autosSource=src;
+  ['autos','paths','choreo'].forEach(s=>{
+    const b=document.getElementById('srcBtn'+s[0].toUpperCase()+s.slice(1));
+    if(b) b.className='autos-src-btn'+(s===src?' sel':'');
+  });
+  selectedAutoIdx=-1; currentTrajectory=null; autosTotalTime=0;
+  autosStopPlay(); autosT=0;
+  renderAutosList(); updateAutosTime(); drawField();
+}
+
 function renderAutosList() {
   const list=document.getElementById('autosListEl'); if(!list) return;
+  if(autosSource==='paths') {
+    if(!pathsList.length){list.innerHTML='<div class="autos-empty">// No paths loaded</div>';return;}
+    let html='';
+    pathsList.forEach((p,i)=>{
+      html+=`<div class="autos-item${selectedAutoIdx===i?' sel':''}" role="button" tabindex="0" onclick="selectPath(${i})" onkeydown="if(event.key==='Enter')selectPath(${i})" title="${escHtml(p.name)}">${escHtml(p.name)}</div>`;
+    });
+    list.innerHTML=html; return;
+  }
+  if(autosSource==='choreo') {
+    if(!choreoList.length){list.innerHTML='<div class="autos-empty">// No Choreo paths loaded</div>';return;}
+    let html='';
+    choreoList.forEach((p,i)=>{
+      html+=`<div class="autos-item${selectedAutoIdx===i?' sel':''}" role="button" tabindex="0" onclick="selectChoreo(${i})" onkeydown="if(event.key==='Enter')selectChoreo(${i})" title="${escHtml(p.name)}">${escHtml(p.name)}</div>`;
+    });
+    list.innerHTML=html; return;
+  }
+  // autos (default)
   if(!autosList.length){list.innerHTML='<div class="autos-empty">// No autos loaded</div>';return;}
   const groups={};
   autosList.forEach((a,i)=>{const f=a.data?.folder||'';if(!groups[f])groups[f]=[];groups[f].push({...a,idx:i});});
@@ -1606,6 +1677,57 @@ function renderAutosList() {
     });
   });
   list.innerHTML=html;
+}
+
+async function selectPath(idx) {
+  selectedAutoIdx=idx; renderAutosList();
+  autosStopPlay(); autosT=0;
+  const path=pathsList[idx]; if(!path) return;
+  const st=document.getElementById('autosStatus');
+  st.className='autos-status checking'; st.textContent=`// Building "${path.name}"...`;
+  const n=path.name;
+  if(!pathsCache[n]) {
+    try {
+      const raw=await fetch(`${autosRawBase}/src/main/deploy/pathplanner/paths/${encodeURIComponent(n)}.path`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      pathsCache[n]=JSON.parse(raw);
+    } catch(e) {
+      st.className='autos-status err'; st.textContent=`✗ Failed to load path: ${e.message}`;
+      currentTrajectory=null; autosTotalTime=0; updateAutosTime(); drawField(); return;
+    }
+  }
+  const seg=buildTrajectory(pathsCache[n]);
+  currentTrajectory=seg;
+  autosTotalTime=seg.length?seg[seg.length-1].t:0;
+  updateAutosTime(); drawField();
+  st.className='autos-status ok'; st.textContent=`✓ "${n}" · ${autosTotalTime.toFixed(2)}s`;
+}
+
+function buildChoreoTrajectory(data) {
+  const samples=data.snapshot?.samples||data.trajectory?.samples||data.samples||[];
+  return samples.map(s=>({x:s.x,y:s.y,rot:s.heading,t:s.t,v:Math.hypot(s.vx||0,s.vy||0)}));
+}
+
+async function selectChoreo(idx) {
+  selectedAutoIdx=idx; renderAutosList();
+  autosStopPlay(); autosT=0;
+  const path=choreoList[idx]; if(!path) return;
+  const st=document.getElementById('autosStatus');
+  st.className='autos-status checking'; st.textContent=`// Loading "${path.name}"...`;
+  const n=path.name;
+  if(!choreoCache[n]) {
+    try {
+      const raw=await fetch(`${choreoPathBase}/${encodeURIComponent(n)}.traj`,{headers:autosHeaders}).then(r=>{if(!r.ok)throw new Error(r.status);return r.text();});
+      choreoCache[n]=JSON.parse(raw);
+    } catch(e) {
+      st.className='autos-status err'; st.textContent=`✗ Failed to load trajectory: ${e.message}`;
+      currentTrajectory=null; autosTotalTime=0; updateAutosTime(); drawField(); return;
+    }
+  }
+  const traj=buildChoreoTrajectory(choreoCache[n]);
+  currentTrajectory=traj;
+  autosTotalTime=traj.length?traj[traj.length-1].t:0;
+  updateAutosTime(); drawField();
+  st.className='autos-status ok'; st.textContent=`✓ "${n}" · ${autosTotalTime.toFixed(2)}s`;
 }
 
 function collectPaths(cmd) {
